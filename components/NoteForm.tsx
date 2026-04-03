@@ -48,9 +48,9 @@ export default function NoteForm({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-stone-800 rounded-2xl shadow-2xl w-full max-w-lg border border-stone-700 animate-slide-up">
+      <div className="relative bg-stone-100 rounded-2xl shadow-2xl w-full max-w-lg border border-stone-200 animate-slide-up">
         <div className="p-6">
-          <h2 className="text-lg font-bold text-stone-200 mb-4">
+          <h2 className="text-lg font-bold text-stone-800 mb-4">
             {note ? "Edit Note" : "New Note"}
           </h2>
 
@@ -61,7 +61,7 @@ export default function NoteForm({
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                 type === "sticky"
                   ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                  : "bg-stone-700/50 text-stone-400 border border-stone-600/50 hover:bg-stone-700"
+                  : "bg-stone-200/50 text-stone-400 border border-stone-300/50 hover:bg-stone-200"
               }`}
             >
               📝 Sticky Note
@@ -71,7 +71,7 @@ export default function NoteForm({
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                 type === "reminder"
                   ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                  : "bg-stone-700/50 text-stone-400 border border-stone-600/50 hover:bg-stone-700"
+                  : "bg-stone-200/50 text-stone-400 border border-stone-300/50 hover:bg-stone-200"
               }`}
             >
               📌 Reminder
@@ -83,7 +83,7 @@ export default function NoteForm({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="What's on your mind?"
-            className="w-full h-32 p-3 rounded-lg bg-stone-900/50 border border-stone-600/50 text-stone-200 placeholder-stone-500 resize-none focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25"
+            className="w-full h-32 p-3 rounded-lg bg-white/50 border border-stone-300/50 text-stone-800 placeholder-stone-500 resize-none focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25"
             autoFocus
           />
 
@@ -98,7 +98,7 @@ export default function NoteForm({
                 className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                   visibility === "public"
                     ? "bg-green-500/20 text-green-400 border border-green-500/40"
-                    : "bg-stone-700/50 text-stone-400 border border-stone-600/50 hover:bg-stone-700"
+                    : "bg-stone-200/50 text-stone-400 border border-stone-300/50 hover:bg-stone-200"
                 }`}
               >
                 👨‍👩‍👧‍👦 Everyone
@@ -113,7 +113,7 @@ export default function NoteForm({
                 className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                   visibility === "private"
                     ? "bg-purple-500/20 text-purple-400 border border-purple-500/40"
-                    : "bg-stone-700/50 text-stone-400 border border-stone-600/50 hover:bg-stone-700"
+                    : "bg-stone-200/50 text-stone-400 border border-stone-300/50 hover:bg-stone-200"
                 }`}
               >
                 🔒 Private
@@ -134,8 +134,8 @@ export default function NoteForm({
                     onClick={() => setRecipientId(member.id)}
                     className={`flex items-center gap-2 py-1.5 px-3 rounded-full text-sm transition-colors border-2 ${
                       recipientId === member.id
-                        ? "bg-stone-600 text-stone-200"
-                        : "border-transparent bg-stone-700/50 text-stone-400 hover:bg-stone-700"
+                        ? "bg-stone-600 text-stone-800"
+                        : "border-transparent bg-stone-200/50 text-stone-400 hover:bg-stone-200"
                     }`}
                     style={
                       recipientId === member.id
@@ -156,7 +156,7 @@ export default function NoteForm({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-between p-4 border-t border-stone-700">
+        <div className="flex items-center justify-between p-4 border-t border-stone-200">
           <div>
             {note && onDelete && (
               <button
@@ -170,7 +170,7 @@ export default function NoteForm({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-stone-400 hover:bg-stone-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm text-stone-400 hover:bg-stone-200 rounded-lg transition-colors"
             >
               Cancel
             </button>

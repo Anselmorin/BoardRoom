@@ -42,9 +42,9 @@ export default function ManageFamily({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-stone-800 rounded-2xl shadow-2xl w-full max-w-md border border-stone-700 animate-slide-up">
+      <div className="relative bg-stone-100 rounded-2xl shadow-2xl w-full max-w-md border border-stone-200 animate-slide-up">
         <div className="p-6">
-          <h2 className="text-lg font-bold text-stone-200 mb-4">
+          <h2 className="text-lg font-bold text-stone-800 mb-4">
             {family.name} Family Members
           </h2>
 
@@ -53,14 +53,14 @@ export default function ManageFamily({
             {family.members.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 p-2 rounded-lg bg-stone-700/30"
+                className="flex items-center gap-3 p-2 rounded-lg bg-stone-200/30"
               >
                 <UserAvatar
                   name={member.name}
                   color={member.color}
                   size="sm"
                 />
-                <span className="text-stone-200 text-sm">{member.name}</span>
+                <span className="text-stone-800 text-sm">{member.name}</span>
                 {member.isAdmin && (
                   <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">
                     Admin
@@ -72,13 +72,13 @@ export default function ManageFamily({
 
           {/* Add member form */}
           {showForm ? (
-            <div className="space-y-3 p-3 rounded-lg bg-stone-900/50 border border-stone-600/50">
+            <div className="space-y-3 p-3 rounded-lg bg-white/50 border border-stone-300/50">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
-                className="w-full p-2 rounded-lg bg-stone-800 border border-stone-600/50 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full p-2 rounded-lg bg-stone-100 border border-stone-300/50 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500/50"
                 autoFocus
               />
               <input
@@ -90,7 +90,7 @@ export default function ManageFamily({
                 }}
                 placeholder="4-digit PIN"
                 inputMode="numeric"
-                className="w-full p-2 rounded-lg bg-stone-800 border border-stone-600/50 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full p-2 rounded-lg bg-stone-100 border border-stone-300/50 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500/50"
               />
               <div>
                 <label className="text-xs text-stone-400 mb-1.5 block">
@@ -114,7 +114,7 @@ export default function ManageFamily({
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowForm(false)}
-                  className="flex-1 py-2 text-sm text-stone-400 hover:bg-stone-700 rounded-lg"
+                  className="flex-1 py-2 text-sm text-stone-400 hover:bg-stone-200 rounded-lg"
                 >
                   Cancel
                 </button>
@@ -137,10 +137,10 @@ export default function ManageFamily({
           )}
         </div>
 
-        <div className="p-4 border-t border-stone-700 flex justify-end">
+        <div className="p-4 border-t border-stone-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-stone-400 hover:bg-stone-700 rounded-lg"
+            className="px-4 py-2 text-sm text-stone-400 hover:bg-stone-200 rounded-lg"
           >
             Done
           </button>

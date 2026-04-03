@@ -49,7 +49,7 @@ export default function SetupPage() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-stone-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md text-center animate-fade-in">
         {/* Step 0: Welcome */}
         {step === 0 && (
@@ -73,7 +73,7 @@ export default function SetupPage() {
         {/* Step 1: Family name */}
         {step === 1 && (
           <div className="animate-slide-up">
-            <h2 className="text-2xl font-bold text-stone-200 mb-2">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">
               What&apos;s your family name?
             </h2>
             <p className="text-stone-400 mb-6">
@@ -87,7 +87,7 @@ export default function SetupPage() {
                 if (e.key === "Enter" && familyName.trim()) setStep(2);
               }}
               placeholder="e.g. Smith"
-              className="w-full p-4 text-center text-xl rounded-xl bg-stone-800 border border-stone-600 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-4"
+              className="w-full p-4 text-center text-xl rounded-xl bg-stone-100 border border-stone-300 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-4"
               autoFocus
             />
             <button
@@ -103,7 +103,7 @@ export default function SetupPage() {
         {/* Step 2: Your name */}
         {step === 2 && (
           <div className="animate-slide-up">
-            <h2 className="text-2xl font-bold text-stone-200 mb-2">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">
               What&apos;s your name?
             </h2>
             <p className="text-stone-400 mb-6">
@@ -117,13 +117,13 @@ export default function SetupPage() {
                 if (e.key === "Enter" && memberName.trim()) setStep(3);
               }}
               placeholder="Your name"
-              className="w-full p-4 text-center text-xl rounded-xl bg-stone-800 border border-stone-600 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-4"
+              className="w-full p-4 text-center text-xl rounded-xl bg-stone-100 border border-stone-300 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-4"
               autoFocus
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 py-3 text-stone-400 hover:bg-stone-800 rounded-xl transition-colors"
+                className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
               >
                 Back
               </button>
@@ -141,7 +141,7 @@ export default function SetupPage() {
         {/* Step 3: Choose color */}
         {step === 3 && (
           <div className="animate-slide-up">
-            <h2 className="text-2xl font-bold text-stone-200 mb-2">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">
               Pick your color
             </h2>
             <p className="text-stone-400 mb-6">
@@ -176,7 +176,7 @@ export default function SetupPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setStep(2)}
-                className="flex-1 py-3 text-stone-400 hover:bg-stone-800 rounded-xl transition-colors"
+                className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
               >
                 Back
               </button>
@@ -193,7 +193,7 @@ export default function SetupPage() {
         {/* Step 4: Set PIN */}
         {step === 4 && (
           <div className="animate-slide-up">
-            <h2 className="text-2xl font-bold text-stone-200 mb-2">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">
               Set a 4-digit PIN
             </h2>
             <p className="text-stone-400 mb-6">
@@ -209,7 +209,7 @@ export default function SetupPage() {
               }}
               placeholder="PIN"
               inputMode="numeric"
-              className="w-full p-4 text-center text-2xl tracking-[0.5em] rounded-xl bg-stone-800 border border-stone-600 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-3"
+              className="w-full p-4 text-center text-2xl tracking-[0.5em] rounded-xl bg-stone-100 border border-stone-300 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-3"
               autoFocus
             />
             <input
@@ -230,7 +230,7 @@ export default function SetupPage() {
               }}
               placeholder="Confirm PIN"
               inputMode="numeric"
-              className="w-full p-4 text-center text-2xl tracking-[0.5em] rounded-xl bg-stone-800 border border-stone-600 text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-3"
+              className="w-full p-4 text-center text-2xl tracking-[0.5em] rounded-xl bg-stone-100 border border-stone-300 text-stone-800 placeholder-stone-500 focus:outline-none focus:border-amber-500 mb-3"
             />
             {pinError && (
               <p className="text-red-400 text-sm mb-3">{pinError}</p>
@@ -238,7 +238,7 @@ export default function SetupPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setStep(3)}
-                className="flex-1 py-3 text-stone-400 hover:bg-stone-800 rounded-xl transition-colors"
+                className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
               >
                 Back
               </button>
@@ -259,7 +259,7 @@ export default function SetupPage() {
             <div
               key={i}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === step ? "bg-amber-400" : "bg-stone-700"
+                i === step ? "bg-amber-400" : "bg-stone-200"
               }`}
             />
           ))}

@@ -40,13 +40,13 @@ export default function NoteBoard({
           <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-wider">
             Notes
           </h2>
-          <span className="text-xs text-stone-500">
+          <span className="text-xs text-stone-400">
             {stickyNotes.length} notes
           </span>
         </div>
 
         {stickyNotes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-stone-500">
+          <div className="flex flex-col items-center justify-center h-48 text-stone-400">
             <p className="text-lg mb-1">No notes yet</p>
             <p className="text-sm">Tap the + button to create one!</p>
           </div>
@@ -66,7 +66,7 @@ export default function NoteBoard({
       </div>
 
       {/* Divider */}
-      <div className="w-px bg-stone-700/50 self-stretch" />
+      <div className="w-px bg-stone-200/50 self-stretch" />
 
       {/* Right: Reminders */}
       <div className="flex-1 overflow-y-auto pl-2">
@@ -74,13 +74,13 @@ export default function NoteBoard({
           <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-wider">
             Reminders
           </h2>
-          <span className="text-xs text-stone-500">
+          <span className="text-xs text-stone-400">
             {reminderNotes.length}
           </span>
         </div>
 
         {reminderNotes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-stone-500">
+          <div className="flex flex-col items-center justify-center h-48 text-stone-400">
             <p className="text-sm">No reminders yet</p>
           </div>
         ) : (

@@ -26,7 +26,7 @@ export default function StickyNote({
       style={{ animationDelay: `${index * 50}ms` }}
     >
       <div
-        className="relative p-4 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] bg-stone-800/80 border border-stone-700/50 min-h-[180px] flex flex-col"
+        className="relative p-4 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] bg-stone-100/80 border border-stone-200/50 min-h-[180px] flex flex-col"
         style={{ transform: `rotate(${rotation}deg)` }}
       >
         {/* Author color strip */}
@@ -54,12 +54,12 @@ export default function StickyNote({
         )}
 
         {/* Content */}
-        <p className="text-stone-200 text-base mt-3 flex-1 whitespace-pre-wrap leading-relaxed">
+        <p className="text-stone-800 text-base mt-3 flex-1 whitespace-pre-wrap leading-relaxed">
           {note.content}
         </p>
 
         {/* Author info */}
-        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-stone-700/50">
+        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-stone-200/50">
           <div
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: author?.color || "#888" }}

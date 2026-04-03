@@ -57,35 +57,35 @@ export default function LoginPage() {
 
   if (loading || !family) {
     return (
-      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
         <div className="text-amber-400 text-lg">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
       <div className="text-center animate-fade-in">
         <div className="text-4xl mb-2">🏠</div>
-        <h1 className="text-3xl font-bold text-amber-400 mb-1">Fam Plan</h1>
+        <h1 className="text-3xl font-bold text-amber-400 mb-1">BoardRoom</h1>
         <p className="text-stone-400 mb-8">{family.name} Family</p>
 
         {!selectedMember ? (
           <div>
-            <p className="text-stone-300 mb-6">Who are you?</p>
+            <p className="text-stone-600 mb-6">Who are you?</p>
             <div className="flex gap-4 justify-center flex-wrap">
               {family.members.map((member) => (
                 <button
                   key={member.id}
                   onClick={() => setSelectedMember(member)}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-stone-800/50 transition-colors"
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-stone-100 transition-colors"
                 >
                   <UserAvatar
                     name={member.name}
                     color={member.color}
                     size="lg"
                   />
-                  <span className="text-stone-200 text-sm">{member.name}</span>
+                  <span className="text-stone-800 text-sm">{member.name}</span>
                 </button>
               ))}
             </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 size="lg"
               />
             </div>
-            <p className="text-stone-200 mb-6">{selectedMember.name}</p>
+            <p className="text-stone-800 mb-6">{selectedMember.name}</p>
 
             {/* PIN display */}
             <div className="flex gap-2 justify-center mb-4">
@@ -108,8 +108,8 @@ export default function LoginPage() {
                   key={i}
                   className={`w-12 h-14 rounded-lg border-2 flex items-center justify-center text-2xl font-bold ${
                     pin.length > i
-                      ? "border-amber-500 bg-amber-500/10 text-amber-400"
-                      : "border-stone-600 bg-stone-800/50 text-stone-600"
+                      ? "border-amber-500 bg-amber-100 text-amber-400"
+                      : "border-stone-300 bg-stone-100 text-stone-600"
                   }`}
                 >
                   {pin.length > i ? "•" : ""}
@@ -125,7 +125,7 @@ export default function LoginPage() {
                 <button
                   key={num}
                   onClick={() => handleDigit(num)}
-                  className="w-16 h-16 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xl font-medium transition-colors flex items-center justify-center"
+                  className="w-16 h-16 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xl font-medium transition-colors flex items-center justify-center"
                 >
                   {num}
                 </button>
@@ -133,13 +133,13 @@ export default function LoginPage() {
               <div />
               <button
                 onClick={() => handleDigit(0)}
-                className="w-16 h-16 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xl font-medium transition-colors flex items-center justify-center"
+                className="w-16 h-16 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xl font-medium transition-colors flex items-center justify-center"
               >
                 0
               </button>
               <button
                 onClick={handleDelete}
-                className="w-16 h-16 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xl font-medium transition-colors flex items-center justify-center"
+                className="w-16 h-16 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xl font-medium transition-colors flex items-center justify-center"
               >
                 ←
               </button>
@@ -151,7 +151,7 @@ export default function LoginPage() {
                 setPin("");
                 setError("");
               }}
-              className="mt-6 text-sm text-stone-400 hover:text-stone-300"
+              className="mt-6 text-sm text-stone-400 hover:text-stone-600"
             >
               ← Pick someone else
             </button>

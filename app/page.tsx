@@ -122,7 +122,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
         <div className="text-amber-400 text-lg">Loading...</div>
       </div>
     );
@@ -131,7 +131,7 @@ export default function HomePage() {
   if (!family || !currentUser) return null;
 
   return (
-    <div className="min-h-screen bg-stone-950 flex flex-col">
+    <div className="min-h-screen bg-amber-50 flex flex-col">
       <Header
         family={family}
         currentUser={currentUser}
