@@ -46,7 +46,7 @@ export default function NoteBoard({
         </div>
 
         {stickyNotes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-stone-400">
+          <div className="flex flex-col items-center justify-center h-48 text-stone-400 dark:text-stone-500">
             <p className="text-lg mb-1">No notes yet</p>
             <p className="text-sm">Tap the + button to create one!</p>
           </div>
@@ -67,7 +67,7 @@ export default function NoteBoard({
       </div>
 
       {/* Divider */}
-      <div className="w-px bg-stone-200/50 self-stretch" />
+      <div className="w-px bg-stone-200/50 dark:bg-stone-700/50 self-stretch" />
 
       {/* Right: Reminders */}
       <div className="flex-1 overflow-y-auto pl-2">

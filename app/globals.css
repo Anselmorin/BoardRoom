@@ -53,3 +53,11 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a29e;
 }
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #57534e;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #78716c;
+}

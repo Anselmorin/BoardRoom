@@ -1,6 +1,7 @@
 "use client";
 
 import { Note, FamilyMember } from "@/lib/types";
+import { useTheme } from "@/lib/theme";
 
 interface ReminderNoteProps {
   note: Note;
@@ -15,13 +16,14 @@ export default function ReminderNote({
   onClick,
   index,
 }: ReminderNoteProps) {
+  const { noteFont, theme } = useTheme();
   return (
     <button
       onClick={onClick}
       className="w-full text-left animate-slide-up"
       style={{ animationDelay: `${index * 30}ms` }}
     >
-      <div className="relative p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:bg-stone-200/60 bg-stone-100/60 border border-stone-200/30 flex items-start gap-3">
+      <div className="relative p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:bg-stone-200/60 dark:hover:bg-stone-700/60 bg-stone-100/60 dark:bg-stone-800/60 border border-stone-200/30 dark:border-stone-700/30 flex items-start gap-3">
         {/* Color indicator bar */}
         <div
           className="w-1 self-stretch rounded-full shrink-0"
@@ -29,7 +31,13 @@ export default function ReminderNote({
         />
 
         <div className="flex-1 min-w-0">
-          <p className="text-stone-800 text-sm whitespace-pre-wrap leading-snug">
+          <p
+            className="text-stone-800 dark:text-stone-200 text-sm whitespace-pre-wrap leading-snug"
+            style={{
+              fontFamily: noteFont,
+              fontSize: theme.fontStyle === "handwriting" ? "1.15rem" : undefined,
+            }}
+          >
             {note.content}
           </p>
           <div className="flex items-center gap-2 mt-1.5">

@@ -18,6 +18,7 @@ import ManageFamily from "@/components/ManageFamily";
 import AuthPopup from "@/components/AuthPopup";
 import Clock from "@/components/Clock";
 import UserAvatar from "@/components/UserAvatar";
+import ThemePanel from "@/components/ThemePanel";
 
 export default function HomePage() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function HomePage() {
   const [pendingAction, setPendingAction] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const [showTheme, setShowTheme] = useState(false);
 
   useEffect(() => {
     const fam = getFamily();
@@ -189,9 +191,9 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen bg-amber-50 flex flex-col">
+    <div className="min-h-screen bg-amber-50 dark:bg-stone-900 flex flex-col transition-colors">
       {/* Header — family board */}
-      <header className="flex items-center justify-between px-6 py-3 bg-white/80 backdrop-blur-sm border-b border-stone-200/50">
+      <header className="flex items-center justify-between px-6 py-3 bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm border-b border-stone-200/50 dark:border-stone-700/50">
         <div className="flex items-center gap-3">
           <div className="text-2xl">🏠</div>
           <div>
@@ -202,7 +204,7 @@ export default function HomePage() {
 
         <div className="flex items-center gap-4">
           <Clock />
-          <div className="h-8 w-px bg-stone-200" />
+          <div className="h-8 w-px bg-stone-200 dark:bg-stone-700" />
 
           {/* Family member avatars */}
           {family && family.members.length > 0 && (
@@ -220,6 +222,15 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* Theme button */}
+          <button
+            onClick={() => setShowTheme(true)}
+            className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+            title="Themes"
+          >
+            🎨
+          </button>
+
           {/* Settings gear — admin only, requires auth */}
           <button
             onClick={() => {
@@ -227,7 +238,7 @@ export default function HomePage() {
                 setShowManageFamily(true);
               });
             }}
-            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+            className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
             title="Settings"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -326,6 +337,11 @@ export default function HomePage() {
           onAddMember={handleAddMember}
           onClose={() => setShowManageFamily(false)}
         />
+      )}
+
+      {/* Theme panel */}
+      {showTheme && (
+        <ThemePanel onClose={() => setShowTheme(false)} />
       )}
     </div>
   );

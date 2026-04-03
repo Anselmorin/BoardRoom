@@ -1,6 +1,7 @@
 "use client";
 
 import { Note, FamilyMember } from "@/lib/types";
+import { useTheme } from "@/lib/theme";
 
 interface StickyNoteProps {
   note: Note;
@@ -19,6 +20,7 @@ export default function StickyNote({
   onClick,
   index,
 }: StickyNoteProps) {
+  const { noteFont, theme } = useTheme();
   const directedMembers = (note.recipientIds || [])
     .map((id) => members.find((m) => m.id === id))
     .filter(Boolean) as FamilyMember[];
@@ -31,7 +33,7 @@ export default function StickyNote({
       style={{ animationDelay: `${index * 50}ms` }}
     >
       <div
-        className="relative p-4 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] bg-stone-100/80 border border-stone-200/50 min-h-[180px] flex flex-col"
+        className="relative p-4 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] bg-stone-100/80 dark:bg-stone-800/80 border border-stone-200/50 dark:border-stone-700/50 min-h-[180px] flex flex-col"
         style={{ transform: `rotate(${rotation}deg)` }}
       >
         {/* Color strip — split by directed-to members, or author color */}
@@ -74,12 +76,18 @@ export default function StickyNote({
         )}
 
         {/* Content */}
-        <p className="text-stone-800 text-base mt-3 flex-1 whitespace-pre-wrap leading-relaxed">
+        <p
+          className="text-stone-800 dark:text-stone-200 mt-3 flex-1 whitespace-pre-wrap leading-relaxed"
+          style={{
+            fontFamily: noteFont,
+            fontSize: theme.fontStyle === "handwriting" ? "1.3rem" : undefined,
+          }}
+        >
           {note.content}
         </p>
 
         {/* Directed-to names, or author if not directed */}
-        <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-stone-200/50 flex-wrap">
+        <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-stone-200/50 dark:border-stone-700/50 flex-wrap">
           {directedMembers.length > 0 ? (
             <>
               <span className="text-xs text-stone-400 mr-0.5">To:</span>
