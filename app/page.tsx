@@ -177,10 +177,8 @@ export default function HomePage() {
     );
   }
 
-  if (!family) return null;
-
   // Filter notes: show public notes always, show private only if logged in
-  const visibleNotes = notes.filter((n) => {
+  const visibleNotes = (family ? notes : []).filter((n) => {
     if (n.visibility === "public") return true;
     if (!currentUser) return false;
     if (n.authorId === currentUser.id) return true;
@@ -196,7 +194,7 @@ export default function HomePage() {
           <div className="text-2xl">🏠</div>
           <div>
             <h1 className="text-xl font-bold text-amber-600">BoardRoom</h1>
-            <p className="text-xs text-stone-400">{family.name} Family</p>
+            <p className="text-xs text-stone-400">{family ? `${family.name} Family` : "Family Board"}</p>
           </div>
         </div>
 
@@ -205,7 +203,7 @@ export default function HomePage() {
           <div className="h-8 w-px bg-stone-200" />
 
           {/* Family member avatars */}
-          {family.members.length > 0 && (
+          {family && family.members.length > 0 && (
             <div className="flex -space-x-2 mr-2">
               {family.members.slice(0, 6).map((m) => (
                 <div key={m.id} title={m.name}>
@@ -305,7 +303,7 @@ export default function HomePage() {
       )}
 
       {/* Note form */}
-      {showNoteForm && currentUser && (
+      {showNoteForm && currentUser && family && (
         <NoteForm
           note={editingNote}
           familyMembers={family.members}
@@ -320,7 +318,7 @@ export default function HomePage() {
       )}
 
       {/* Manage family */}
-      {showManageFamily && (
+      {showManageFamily && family && (
         <ManageFamily
           family={family}
           onAddMember={handleAddMember}
