@@ -101,6 +101,10 @@ export default function HomePage() {
     setPendingAction("");
   }, [pendingAction]);
 
+  const handleLogout = () => {
+    clearSession();
+    setCurrentUser(null);
+  };
 
   const handleSaveNote = (data: NoteInput) => {
     if (!currentUser) return;
@@ -186,53 +190,66 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-amber-50 flex flex-col">
-      {/* Header — communal family board, no account stuff */}
+      {/* Header — family board */}
       <header className="flex items-center justify-between px-6 py-3 bg-white/80 backdrop-blur-sm border-b border-stone-200/50">
         <div className="flex items-center gap-3">
           <div className="text-2xl">🏠</div>
           <div>
-            <h1 className="text-xl font-bold text-amber-600">{family.name} Board</h1>
-            <p className="text-xs text-stone-400">BoardRoom</p>
+            <h1 className="text-xl font-bold text-amber-600">BoardRoom</h1>
+            <p className="text-xs text-stone-400">{family.name} Family</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <Clock />
+          <div className="h-8 w-px bg-stone-200" />
 
           {/* Family member avatars */}
           {family.members.length > 0 && (
-            <>
-              <div className="h-8 w-px bg-stone-200" />
-              <div className="flex -space-x-2">
-                {family.members.slice(0, 6).map((m) => (
-                  <div key={m.id} title={m.name}>
-                    <UserAvatar name={m.name} color={m.color} size="sm" />
-                  </div>
-                ))}
-                {family.members.length > 6 && (
-                  <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium">
-                    +{family.members.length - 6}
-                  </div>
-                )}
-              </div>
-            </>
+            <div className="flex -space-x-2 mr-2">
+              {family.members.slice(0, 6).map((m) => (
+                <div key={m.id} title={m.name}>
+                  <UserAvatar name={m.name} color={m.color} size="sm" />
+                </div>
+              ))}
+              {family.members.length > 6 && (
+                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium">
+                  +{family.members.length - 6}
+                </div>
+              )}
+            </div>
           )}
 
-          {/* Settings gear — opens auth for admin stuff */}
-          <button
-            onClick={() => {
-              requireAuth("settings", () => {
-                setShowManageFamily(true);
-              });
-            }}
-            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
-            title="Settings"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
-          </button>
+          {currentUser ? (
+            <div className="flex items-center gap-2">
+              {/* Settings gear — only for admins */}
+              {currentUser.isAdmin && (
+                <button
+                  onClick={() => setShowManageFamily(true)}
+                  className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+                  title="Manage Family"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 text-xs text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => { setPendingAction(""); setShowAuth(true); }}
+              className="px-4 py-2 text-sm font-medium text-amber-600 hover:bg-amber-50 border border-amber-300 rounded-lg transition-colors"
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </header>
 
