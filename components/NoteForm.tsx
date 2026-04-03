@@ -28,8 +28,17 @@ export default function NoteForm({
     note?.visibility || "public"
   );
   const [recipientId, setRecipientId] = useState(note?.recipientId || "");
+  const [directedTo, setDirectedTo] = useState<string[]>(note?.recipientIds || []);
 
   const otherMembers = familyMembers.filter((m) => m.id !== currentUserId);
+
+  const toggleDirected = (memberId: string) => {
+    setDirectedTo((prev) =>
+      prev.includes(memberId)
+        ? prev.filter((id) => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
 
   const handleSave = () => {
     if (!content.trim()) return;
@@ -39,6 +48,7 @@ export default function NoteForm({
       type,
       visibility,
       recipientId: visibility === "private" ? recipientId : undefined,
+      recipientIds: visibility === "public" && directedTo.length > 0 ? directedTo : undefined,
     });
   };
 
@@ -86,6 +96,39 @@ export default function NoteForm({
             className="w-full h-32 p-3 rounded-lg bg-white/50 border border-stone-300/50 text-stone-800 placeholder-stone-500 resize-none focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25"
             autoFocus
           />
+
+          {/* Directed to (public notes) */}
+          {visibility === "public" && (
+            <div className="mt-4">
+              <label className="text-sm text-stone-400 mb-2 block">
+                Directed to (optional):
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {familyMembers.map((member) => (
+                  <button
+                    key={member.id}
+                    onClick={() => toggleDirected(member.id)}
+                    className={`flex items-center gap-2 py-1.5 px-3 rounded-full text-sm transition-colors border-2 ${
+                      directedTo.includes(member.id)
+                        ? "text-stone-800"
+                        : "border-transparent bg-stone-200/50 text-stone-400 hover:bg-stone-200"
+                    }`}
+                    style={
+                      directedTo.includes(member.id)
+                        ? { borderColor: member.color, backgroundColor: member.color + "20" }
+                        : undefined
+                    }
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: member.color }}
+                    />
+                    {member.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Visibility toggle */}
           <div className="mt-4">

@@ -5,6 +5,7 @@ import { Note, FamilyMember } from "@/lib/types";
 interface StickyNoteProps {
   note: Note;
   author: FamilyMember | undefined;
+  members: FamilyMember[];
   onClick: () => void;
   index: number;
 }
@@ -14,9 +15,13 @@ const ROTATIONS = [-2, 1, -1, 2, 0, -1.5, 1.5];
 export default function StickyNote({
   note,
   author,
+  members,
   onClick,
   index,
 }: StickyNoteProps) {
+  const directedMembers = (note.recipientIds || [])
+    .map((id) => members.find((m) => m.id === id))
+    .filter(Boolean) as FamilyMember[];
   const rotation = ROTATIONS[index % ROTATIONS.length];
 
   return (
@@ -29,11 +34,26 @@ export default function StickyNote({
         className="relative p-4 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] bg-stone-100/80 border border-stone-200/50 min-h-[180px] flex flex-col"
         style={{ transform: `rotate(${rotation}deg)` }}
       >
-        {/* Author color strip */}
-        <div
-          className="absolute top-0 left-0 right-0 h-2 rounded-t-lg"
-          style={{ backgroundColor: author?.color || "#888" }}
-        />
+        {/* Color strip — split by directed-to members, or author color */}
+        <div className="absolute top-0 left-0 right-0 h-2 rounded-t-lg overflow-hidden flex">
+          {directedMembers.length > 0 ? (
+            directedMembers.map((m, i) => (
+              <div
+                key={m.id}
+                className={i === 0 ? "rounded-tl-lg" : i === directedMembers.length - 1 ? "rounded-tr-lg" : ""}
+                style={{
+                  backgroundColor: m.color,
+                  flex: 1,
+                }}
+              />
+            ))
+          ) : (
+            <div
+              className="rounded-t-lg w-full h-full"
+              style={{ backgroundColor: author?.color || "#888" }}
+            />
+          )}
+        </div>
 
         {/* Private lock icon */}
         {note.visibility === "private" && (
@@ -58,15 +78,34 @@ export default function StickyNote({
           {note.content}
         </p>
 
-        {/* Author info */}
-        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-stone-200/50">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: author?.color || "#888" }}
-          />
-          <span className="text-xs text-stone-400">
-            {author?.name || "Unknown"}
-          </span>
+        {/* Directed-to names, or author if not directed */}
+        <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-stone-200/50 flex-wrap">
+          {directedMembers.length > 0 ? (
+            <>
+              <span className="text-xs text-stone-400 mr-0.5">To:</span>
+              {directedMembers.map((m, i) => (
+                <span key={m.id} className="flex items-center gap-1">
+                  <div
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: m.color }}
+                  />
+                  <span className="text-xs text-stone-500 font-medium">
+                    {m.name}{i < directedMembers.length - 1 ? "," : ""}
+                  </span>
+                </span>
+              ))}
+            </>
+          ) : (
+            <>
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: author?.color || "#888" }}
+              />
+              <span className="text-xs text-stone-400">
+                {author?.name || "Unknown"}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </button>

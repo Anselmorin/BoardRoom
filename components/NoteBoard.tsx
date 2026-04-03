@@ -57,6 +57,7 @@ export default function NoteBoard({
                 key={note.id}
                 note={note}
                 author={getMember(note.authorId)}
+                members={members}
                 onClick={() => onNoteClick(note)}
                 index={i}
               />

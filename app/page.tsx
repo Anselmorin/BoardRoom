@@ -118,6 +118,7 @@ export default function HomePage() {
               type: data.type,
               visibility: data.visibility,
               recipientId: data.recipientId,
+              recipientIds: data.recipientIds,
               updatedAt: new Date().toISOString(),
             }
           : n
@@ -132,6 +133,7 @@ export default function HomePage() {
         type: data.type,
         visibility: data.visibility,
         recipientId: data.recipientId,
+        recipientIds: data.recipientIds,
         color: "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

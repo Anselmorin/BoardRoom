@@ -45,6 +45,7 @@ export interface Note {
   type: "sticky" | "reminder";
   visibility: "public" | "private";
   recipientId?: string;
+  recipientIds?: string[];
   color: string;
   createdAt: string;
   updatedAt: string;
@@ -56,4 +57,5 @@ export interface NoteInput {
   type: "sticky" | "reminder";
   visibility: "public" | "private";
   recipientId?: string;
+  recipientIds?: string[];
 }
