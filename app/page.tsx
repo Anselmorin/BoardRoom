@@ -28,13 +28,17 @@ export default function HomePage() {
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [showManageFamily, setShowManageFamily] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showQuickPick, setShowQuickPick] = useState(false);
   const [pendingAction, setPendingAction] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [needsSetup, setNeedsSetup] = useState(false);
 
   useEffect(() => {
     const fam = getFamily();
     if (!fam) {
-      router.replace("/setup");
+      // Don't redirect — show empty board with setup prompt
+      setNeedsSetup(true);
+      setLoading(false);
       return;
     }
     setFamily(fam);
@@ -51,6 +55,17 @@ export default function HomePage() {
     setLoading(false);
   }, [router]);
 
+  // For public actions: just pick your name, no PIN
+  const quickPick = useCallback((action: string, callback: () => void) => {
+    if (currentUser) {
+      callback();
+    } else if (family && family.members.length > 0) {
+      setPendingAction(action);
+      setShowQuickPick(true);
+    }
+  }, [currentUser, family]);
+
+  // For private actions: require full PIN auth
   const requireAuth = useCallback((action: string, callback: () => void) => {
     if (currentUser) {
       callback();
@@ -59,6 +74,17 @@ export default function HomePage() {
       setShowAuth(true);
     }
   }, [currentUser]);
+
+  const handleQuickPick = useCallback((user: FamilyMember) => {
+    setCurrentUser(user);
+    // Don't save to session — quick pick is temporary
+    setShowQuickPick(false);
+    if (pendingAction === "new-note") {
+      setEditingNote(null);
+      setShowNoteForm(true);
+    }
+    setPendingAction("");
+  }, [pendingAction]);
 
   const handleAuth = useCallback((user: FamilyMember) => {
     setCurrentUser(user);
@@ -214,25 +240,62 @@ export default function HomePage() {
       </header>
 
       {/* Board — always visible */}
-      <NoteBoard
-        notes={visibleNotes}
-        members={family.members}
-        currentUserId={currentUser?.id ?? ""}
-        onNoteClick={(note) => {
-          if (currentUser && note.authorId === currentUser.id) {
-            setEditingNote(note);
-            setShowNoteForm(true);
-          }
-        }}
-        onNewNote={() => {
-          requireAuth("new-note", () => {
-            setEditingNote(null);
-            setShowNoteForm(true);
-          });
-        }}
-      />
+      {needsSetup ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="text-6xl">🏠</div>
+          <h2 className="text-2xl font-bold text-stone-800">Welcome to BoardRoom!</h2>
+          <p className="text-stone-400">Set up your family to start posting.</p>
+          <button
+            onClick={() => router.push("/setup")}
+            className="px-6 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium hover:bg-amber-400 transition-colors"
+          >
+            Set Up Family
+          </button>
+        </div>
+      ) : family && (
+        <NoteBoard
+          notes={visibleNotes}
+          members={family.members}
+          currentUserId={currentUser?.id ?? ""}
+          onNoteClick={(note) => {
+            if (currentUser && note.authorId === currentUser.id) {
+              setEditingNote(note);
+              setShowNoteForm(true);
+            }
+          }}
+          onNewNote={() => {
+            // Public posting — just pick your name, no PIN
+            quickPick("new-note", () => {
+              setEditingNote(null);
+              setShowNoteForm(true);
+            });
+          }}
+        />
+      )}
 
-      {/* Auth popup */}
+      {/* Quick pick popup — no PIN, just pick your name */}
+      {showQuickPick && family && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => { setShowQuickPick(false); setPendingAction(""); }}>
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-stone-800 mb-1 text-center">Who are you?</h2>
+            <p className="text-xs text-stone-400 mb-4 text-center">Tap your name to post</p>
+            <div className="grid grid-cols-3 gap-3">
+              {family.members.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => handleQuickPick(m)}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-amber-50 transition-colors"
+                >
+                  <UserAvatar name={m.name} color={m.color} size="lg" />
+                  <span className="text-xs text-stone-600">{m.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auth popup — full PIN, for private stuff */}
       {showAuth && family && (
         <AuthPopup
           family={family}
