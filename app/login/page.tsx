@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Family, FamilyMember } from "@/lib/types";
+import { Family, FamilyMember, ROLE_INFO } from "@/lib/types";
 import { getFamily, getSession, setSession } from "@/lib/storage";
 import UserAvatar from "@/components/UserAvatar";
 
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fam = getFamily();
+    const fam = getFamily(); // already cleans expired members
     if (!fam) {
       router.replace("/setup");
       return;
@@ -63,6 +63,12 @@ export default function LoginPage() {
     );
   }
 
+  // Filter out expired babysitters (getFamily already does this, but double-check)
+  const activeMembers = family.members.filter((m) => {
+    if (m.expiresAt && m.expiresAt < new Date().toISOString()) return false;
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
       <div className="text-center animate-fade-in">
@@ -74,20 +80,26 @@ export default function LoginPage() {
           <div>
             <p className="text-stone-600 mb-6">Who are you?</p>
             <div className="flex gap-4 justify-center flex-wrap">
-              {family.members.map((member) => (
-                <button
-                  key={member.id}
-                  onClick={() => setSelectedMember(member)}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-stone-100 transition-colors"
-                >
-                  <UserAvatar
-                    name={member.name}
-                    color={member.color}
-                    size="lg"
-                  />
-                  <span className="text-stone-800 text-sm">{member.name}</span>
-                </button>
-              ))}
+              {activeMembers.map((member) => {
+                const info = member.role ? ROLE_INFO[member.role] : null;
+                return (
+                  <button
+                    key={member.id}
+                    onClick={() => setSelectedMember(member)}
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-stone-100 transition-colors"
+                  >
+                    <UserAvatar
+                      name={member.name}
+                      color={member.color}
+                      size="lg"
+                    />
+                    <span className="text-stone-800 text-sm flex items-center gap-1">
+                      {info && <span>{info.emoji}</span>}
+                      {member.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ) : (
@@ -99,7 +111,12 @@ export default function LoginPage() {
                 size="lg"
               />
             </div>
-            <p className="text-stone-800 mb-6">{selectedMember.name}</p>
+            <p className="text-stone-800 mb-6 flex items-center justify-center gap-1">
+              {selectedMember.role && ROLE_INFO[selectedMember.role] && (
+                <span>{ROLE_INFO[selectedMember.role].emoji}</span>
+              )}
+              {selectedMember.name}
+            </p>
 
             {/* PIN display */}
             <div className="flex gap-2 justify-center mb-4">

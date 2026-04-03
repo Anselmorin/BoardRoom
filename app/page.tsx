@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Family, FamilyMember, Note, NoteInput } from "@/lib/types";
+import { Family, FamilyMember, Note, NoteInput, ROLE_INFO } from "@/lib/types";
 import {
   getFamily,
   setFamily as saveFamily,
@@ -126,13 +126,12 @@ export default function HomePage() {
   };
 
   const handleAddMember = (
-    member: Omit<FamilyMember, "id" | "isAdmin">
+    member: Omit<FamilyMember, "id">
   ) => {
     if (!family) return;
     const newMember: FamilyMember = {
       ...member,
       id: crypto.randomUUID(),
-      isAdmin: false,
     };
     const updated = {
       ...family,
@@ -189,6 +188,11 @@ export default function HomePage() {
                   >
                     Manage Family
                   </button>
+                )}
+                {currentUser.role && ROLE_INFO[currentUser.role] && (
+                  <span className="text-xs text-stone-400">
+                    {ROLE_INFO[currentUser.role].emoji} {ROLE_INFO[currentUser.role].label}
+                  </span>
                 )}
               </div>
               <button

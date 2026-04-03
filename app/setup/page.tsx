@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFamily, setFamily, setSession } from "@/lib/storage";
 import { MEMBER_COLORS } from "@/lib/colors";
+import { Role, ROLE_INFO, ADMIN_ROLES } from "@/lib/types";
 
 export default function SetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [familyName, setFamilyName] = useState("");
   const [memberName, setMemberName] = useState("");
+  const [role, setRole] = useState<Role>("dad");
   const [color, setColor] = useState(MEMBER_COLORS[0].value);
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
@@ -38,6 +40,7 @@ export default function SetupPage() {
           name: memberName.trim(),
           pin,
           color,
+          role,
           isAdmin: true,
         },
       ],
@@ -138,8 +141,53 @@ export default function SetupPage() {
           </div>
         )}
 
-        {/* Step 3: Choose color */}
+        {/* Step 3: Choose role (admin roles only for setup) */}
         {step === 3 && (
+          <div className="animate-slide-up">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">
+              What&apos;s your role?
+            </h2>
+            <p className="text-stone-400 mb-6">
+              As the first member, you&apos;ll be an admin.
+            </p>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {ADMIN_ROLES.map((r) => {
+                const info = ROLE_INFO[r];
+                return (
+                  <button
+                    key={r}
+                    onClick={() => setRole(r)}
+                    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      role === r
+                        ? "border-amber-500 bg-amber-100/50 scale-105"
+                        : "border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/30"
+                    }`}
+                  >
+                    <span className="text-3xl">{info.emoji}</span>
+                    <span className="text-sm font-medium text-stone-700">{info.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setStep(2)}
+                className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep(4)}
+                className="flex-1 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium hover:bg-amber-400 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Choose color */}
+        {step === 4 && (
           <div className="animate-slide-up">
             <h2 className="text-2xl font-bold text-stone-800 mb-2">
               Pick your color
@@ -175,13 +223,13 @@ export default function SetupPage() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
               >
                 Back
               </button>
               <button
-                onClick={() => setStep(4)}
+                onClick={() => setStep(5)}
                 className="flex-1 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium hover:bg-amber-400 transition-colors"
               >
                 Next
@@ -190,8 +238,8 @@ export default function SetupPage() {
           </div>
         )}
 
-        {/* Step 4: Set PIN */}
-        {step === 4 && (
+        {/* Step 5: Set PIN */}
+        {step === 5 && (
           <div className="animate-slide-up">
             <h2 className="text-2xl font-bold text-stone-800 mb-2">
               Set a 4-digit PIN
@@ -237,7 +285,7 @@ export default function SetupPage() {
             )}
             <div className="flex gap-2">
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 className="flex-1 py-3 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
               >
                 Back
@@ -255,7 +303,7 @@ export default function SetupPage() {
 
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mt-8">
-          {[0, 1, 2, 3, 4].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
               className={`w-2 h-2 rounded-full transition-colors ${
