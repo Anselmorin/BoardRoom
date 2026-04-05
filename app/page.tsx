@@ -19,6 +19,7 @@ import AuthPopup from "@/components/AuthPopup";
 import Clock from "@/components/Clock";
 import UserAvatar from "@/components/UserAvatar";
 import ThemePanel from "@/components/ThemePanel";
+import AccountPage from "@/components/AccountPage";
 
 export default function HomePage() {
   const router = useRouter();
@@ -34,6 +35,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
   const [showTheme, setShowTheme] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
+  const [accountMember, setAccountMember] = useState<FamilyMember | null>(null);
 
   useEffect(() => {
     const fam = getFamily();
@@ -99,9 +102,45 @@ export default function HomePage() {
       setShowNoteForm(true);
     } else if (pendingAction === "settings" && user.isAdmin) {
       setShowManageFamily(true);
+    } else if (pendingAction === "account") {
+      setAccountMember(user);
+      setShowAccount(true);
     }
     setPendingAction("");
   }, [pendingAction]);
+
+  const handleAvatarTap = useCallback((member?: FamilyMember) => {
+    // If tapping a specific member avatar in the row, auth as that member
+    // If no member passed, open auth to pick who you are
+    setPendingAction("account");
+    setShowAuth(true);
+  }, []);
+
+  const handleUpdatePhoto = useCallback((memberId: string, photo: string) => {
+    if (!family) return;
+    const updated = {
+      ...family,
+      members: family.members.map((m) =>
+        m.id === memberId ? { ...m, photo } : m
+      ),
+    };
+    saveFamily(updated);
+    setFamily(updated);
+    // Update accountMember too
+    setAccountMember((prev) => prev ? { ...prev, photo } : prev);
+  }, [family]);
+
+  const handleChangePin = useCallback((memberId: string, newPin: string) => {
+    if (!family) return;
+    const updated = {
+      ...family,
+      members: family.members.map((m) =>
+        m.id === memberId ? { ...m, pin: newPin } : m
+      ),
+    };
+    saveFamily(updated);
+    setFamily(updated);
+  }, [family]);
 
   const handleLogout = () => {
     clearSession();
@@ -182,13 +221,8 @@ export default function HomePage() {
   }
 
   // Filter notes: show public notes always, show private only if logged in
-  const visibleNotes = (family ? notes : []).filter((n) => {
-    if (n.visibility === "public") return true;
-    if (!currentUser) return false;
-    if (n.authorId === currentUser.id) return true;
-    if (n.recipientId === currentUser.id) return true;
-    return false;
-  });
+  // Public board only shows public notes — private notes live in account page only
+  const visibleNotes = (family ? notes : []).filter((n) => n.visibility === "public");
 
   return (
     <div className="min-h-screen bg-amber-50 dark:bg-stone-900 flex flex-col transition-colors">
@@ -206,16 +240,22 @@ export default function HomePage() {
           <Clock />
           <div className="h-8 w-px bg-stone-200 dark:bg-stone-700" />
 
-          {/* Family member avatars */}
+          {/* Family member avatars — tap to open account */}
           {family && family.members.length > 0 && (
             <div className="flex -space-x-2 mr-2">
               {family.members.slice(0, 6).map((m) => (
-                <div key={m.id} title={m.name}>
-                  <UserAvatar name={m.name} color={m.color} size="sm" />
+                <div key={m.id} title={`${m.name} — tap to open account`}>
+                  <UserAvatar
+                    name={m.name}
+                    color={m.color}
+                    photo={m.photo}
+                    size="sm"
+                    onClick={handleAvatarTap}
+                  />
                 </div>
               ))}
               {family.members.length > 6 && (
-                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-xs text-stone-500 font-medium">
+                <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xs text-stone-500 font-medium">
                   +{family.members.length - 6}
                 </div>
               )}
@@ -342,6 +382,22 @@ export default function HomePage() {
       {/* Theme panel */}
       {showTheme && (
         <ThemePanel onClose={() => setShowTheme(false)} />
+      )}
+
+      {/* Account page */}
+      {showAccount && accountMember && family && (
+        <AccountPage
+          member={accountMember}
+          privateNotes={notes.filter(
+            (n) =>
+              n.visibility === "private" &&
+              (n.recipientId === accountMember.id || n.authorId === accountMember.id)
+          )}
+          allMembers={family.members}
+          onUpdatePhoto={handleUpdatePhoto}
+          onChangePin={handleChangePin}
+          onClose={() => { setShowAccount(false); setAccountMember(null); }}
+        />
       )}
     </div>
   );

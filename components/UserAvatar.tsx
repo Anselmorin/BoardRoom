@@ -4,6 +4,7 @@ interface UserAvatarProps {
   name: string;
   color: string;
   size?: "sm" | "md" | "lg";
+  photo?: string;
   onClick?: () => void;
 }
 
@@ -11,6 +12,7 @@ export default function UserAvatar({
   name,
   color,
   size = "md",
+  photo,
   onClick,
 }: UserAvatarProps) {
   const initials = name
@@ -26,25 +28,33 @@ export default function UserAvatar({
     lg: "w-16 h-16 text-xl",
   };
 
-  const classes = `${sizeClasses[size]} rounded-full flex items-center justify-center font-bold text-white shadow-md transition-transform ${
+  const borderStyle = { borderColor: color, borderWidth: 2, borderStyle: "solid" as const };
+
+  const classes = `${sizeClasses[size]} rounded-full shadow-md transition-transform overflow-hidden ${
     onClick ? "hover:scale-105 cursor-pointer" : ""
   }`;
+
+  const inner = photo ? (
+    <img src={photo} alt={name} className="w-full h-full object-cover" />
+  ) : (
+    <span className="font-bold text-white flex items-center justify-center w-full h-full" style={{ fontSize: "inherit" }}>{initials}</span>
+  );
 
   if (onClick) {
     return (
       <button
         onClick={onClick}
         className={classes}
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: photo ? undefined : color, ...borderStyle }}
       >
-        {initials}
+        {inner}
       </button>
     );
   }
 
   return (
-    <div className={classes} style={{ backgroundColor: color }}>
-      {initials}
+    <div className={classes} style={{ backgroundColor: photo ? undefined : color, ...borderStyle }}>
+      {inner}
     </div>
   );
 }

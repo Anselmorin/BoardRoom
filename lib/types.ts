@@ -22,6 +22,7 @@ export interface FamilyMember {
   role: Role;
   isAdmin: boolean; // keep for backward compat, derived from role tier
   expiresAt?: string; // ISO date string, only for babysitter
+  photo?: string; // base64 data URL
 }
 
 /** Backward compat: assign a role to legacy members that don't have one */
