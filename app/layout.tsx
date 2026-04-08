@@ -21,6 +21,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-amber-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased min-h-screen transition-colors">
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            const t = JSON.parse(localStorage.getItem('famplan_theme') || '{}');
+            if (t.colorMode === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+          } catch(e) {}
+        ` }} />
         <ThemeProvider>
           {children}
         </ThemeProvider>
