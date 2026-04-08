@@ -20,6 +20,7 @@ import Clock from "@/components/Clock";
 import UserAvatar from "@/components/UserAvatar";
 import ThemePanel from "@/components/ThemePanel";
 import AccountPage from "@/components/AccountPage";
+import NoteDetail from "@/components/NoteDetail";
 
 export default function HomePage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function HomePage() {
   const [showTheme, setShowTheme] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [accountMember, setAccountMember] = useState<FamilyMember | null>(null);
+  const [detailNote, setDetailNote] = useState<Note | null>(null);
 
   useEffect(() => {
     const fam = getFamily();
@@ -187,6 +189,38 @@ export default function HomePage() {
     setEditingNote(null);
   };
 
+  const handleLike = useCallback((noteId: string) => {
+    if (!currentUser) return;
+    const allNotes = getNotes();
+    const updated = allNotes.map((n) => {
+      if (n.id !== noteId) return n;
+      const likes = n.likes || [];
+      const hasLiked = likes.includes(currentUser.id);
+      return { ...n, likes: hasLiked ? likes.filter((id) => id !== currentUser.id) : [...likes, currentUser.id] };
+    });
+    saveNotes(updated);
+    setNotes(updated);
+    setDetailNote(prev => prev?.id === noteId ? updated.find(n => n.id === noteId) || null : prev);
+  }, [currentUser]);
+
+  const handleComment = useCallback((noteId: string, content: string) => {
+    if (!currentUser) return;
+    const allNotes = getNotes();
+    const newComment = {
+      id: crypto.randomUUID(),
+      authorId: currentUser.id,
+      content,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = allNotes.map((n) => {
+      if (n.id !== noteId) return n;
+      return { ...n, comments: [...(n.comments || []), newComment] };
+    });
+    saveNotes(updated);
+    setNotes(updated);
+    setDetailNote(prev => prev?.id === noteId ? updated.find(n => n.id === noteId) || null : prev);
+  }, [currentUser]);
+
   const handleDeleteNote = () => {
     if (!editingNote) return;
     const updated = getNotes().filter((n) => n.id !== editingNote.id);
@@ -307,14 +341,15 @@ export default function HomePage() {
           notes={visibleNotes}
           members={family.members}
           currentUserId={currentUser?.id ?? ""}
-          onNoteClick={(note) => {
-            if (currentUser && note.authorId === currentUser.id) {
-              setEditingNote(note);
-              setShowNoteForm(true);
+          onNoteClick={(note) => setDetailNote(note)}
+          onLike={(noteId) => {
+            if (!currentUser) {
+              requireAuth("like", () => handleLike(noteId));
+            } else {
+              handleLike(noteId);
             }
           }}
           onNewNote={() => {
-            // Public posting — just pick your name, no PIN
             quickPick("new-note", () => {
               setEditingNote(null);
               setShowNoteForm(true);
@@ -397,6 +432,36 @@ export default function HomePage() {
           onUpdatePhoto={handleUpdatePhoto}
           onChangePin={handleChangePin}
           onClose={() => { setShowAccount(false); setAccountMember(null); }}
+        />
+      )}
+
+      {/* Note detail — likes + comments */}
+      {detailNote && family && (
+        <NoteDetail
+          note={detailNote}
+          author={family.members.find(m => m.id === detailNote.authorId)}
+          members={family.members}
+          currentUser={currentUser}
+          onLike={(noteId) => {
+            if (!currentUser) {
+              requireAuth("like", () => handleLike(noteId));
+            } else {
+              handleLike(noteId);
+            }
+          }}
+          onComment={(noteId, content) => {
+            if (!currentUser) {
+              requireAuth("comment", () => handleComment(noteId, content));
+            } else {
+              handleComment(noteId, content);
+            }
+          }}
+          onEdit={currentUser?.id === detailNote.authorId ? () => {
+            setEditingNote(detailNote);
+            setDetailNote(null);
+            setShowNoteForm(true);
+          } : undefined}
+          onClose={() => setDetailNote(null)}
         />
       )}
     </div>
