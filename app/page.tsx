@@ -21,6 +21,7 @@ import UserAvatar from "@/components/UserAvatar";
 import ThemePanel from "@/components/ThemePanel";
 import AccountPage from "@/components/AccountPage";
 import NoteDetail from "@/components/NoteDetail";
+import AuthStack from "@/components/AuthStack";
 
 export default function HomePage() {
   const router = useRouter();
@@ -380,15 +381,22 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Auth popup — full PIN, for private stuff */}
-      {showAuth && family && (
+      {/* Auth — use AuthStack for like/comment (animated card stack), AuthPopup for others */}
+      {showAuth && family && (pendingAction === "like" || pendingAction === "comment" ? (
+        <AuthStack
+          family={family}
+          onAuth={handleAuth}
+          onClose={() => { setShowAuth(false); setPendingAction(""); }}
+          action={pendingAction === "like" ? "Who's liking this? ❤️" : "Who's commenting? 💬"}
+        />
+      ) : (
         <AuthPopup
           family={family}
           onAuth={handleAuth}
           onClose={() => { setShowAuth(false); setPendingAction(""); }}
           action={pendingAction === "new-note" ? "Post a new note" : undefined}
         />
-      )}
+      ))}
 
       {/* Note form */}
       {showNoteForm && currentUser && family && (
