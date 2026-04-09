@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* Force class-based dark mode — ignore system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not(.dark) {
+    color-scheme: light;
+  }
+}
+
+/* Light mode base colors (always default) */
+:root {
+  --bg-primary: #fffbeb;
+  --bg-secondary: #ffffff;
+  --text-primary: #1c1917;
+  --text-secondary: #78716c;
+  color-scheme: light;
+}
+
+/* Dark mode only when .dark class is explicitly set */
+html.dark {
+  color-scheme: dark;
+}
+
 @theme {
   --animate-note-in: note-in 0.3s ease-out forwards;
   --animate-fade-in: fade-in 0.2s ease-out forwards;

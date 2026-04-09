@@ -287,59 +287,42 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-amber-50 dark:bg-stone-900 flex flex-col transition-colors">
-      {/* Header — family board */}
-      <header className="flex items-center justify-between px-6 py-3 bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm border-b border-stone-200/50 dark:border-stone-700/50">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl">🏠</div>
+      {/* Header — mobile-first compact */}
+      <header className="flex items-center justify-between px-3 py-2 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
+        <div className="flex items-center gap-2">
+          <div className="text-xl">🏠</div>
           <div>
-            <h1 className="text-xl font-bold text-amber-600">BoardRoom</h1>
-            <p className="text-xs text-stone-400">{family ? `${family.name} Family` : "Family Board"}</p>
+            <h1 className="text-base font-bold text-amber-600 leading-tight">BoardRoom</h1>
+            <p className="text-[10px] text-stone-400 leading-tight">{family ? `${family.name} Family` : "Family Board"}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Clock />
-          <div className="h-8 w-px bg-stone-200 dark:bg-stone-700" />
 
           {/* Family member avatars — tap to open account */}
           {family && family.members.length > 0 && (
-            <div className="flex -space-x-2 mr-2">
-              {family.members.slice(0, 6).map((m) => (
-                <div key={m.id} title={`${m.name} — tap to open account`}>
-                  <UserAvatar
-                    name={m.name}
-                    color={m.color}
-                    photo={m.photo}
-                    size="sm"
-                    onClick={handleAvatarTap}
-                  />
+            <div className="flex -space-x-1.5">
+              {family.members.slice(0, 4).map((m) => (
+                <div key={m.id} title={m.name}>
+                  <UserAvatar name={m.name} color={m.color} photo={m.photo} size="sm" onClick={handleAvatarTap} />
                 </div>
               ))}
-              {family.members.length > 6 && (
-                <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xs text-stone-500 font-medium">
-                  +{family.members.length - 6}
+              {family.members.length > 4 && (
+                <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 border-2 border-white flex items-center justify-center text-xs text-stone-500 font-medium">
+                  +{family.members.length - 4}
                 </div>
               )}
             </div>
           )}
 
           {/* Theme button */}
-          <button
-            onClick={() => setShowTheme(true)}
-            className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
-            title="Themes"
-          >
-            🎨
-          </button>
+          <button onClick={() => setShowTheme(true)} className="text-lg" title="Themes">🎨</button>
 
-          {/* Settings gear — admin only, requires auth */}
+          {/* Settings gear — admin only */}
           <button
-            onClick={() => {
-              requireAuth("settings", () => {
-                setShowManageFamily(true);
-              });
-            }}
-            className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+            onClick={() => requireAuth("settings", () => setShowManageFamily(true))}
+            className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300"
             title="Settings"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -352,15 +335,15 @@ export default function HomePage() {
 
       {/* Board — always visible */}
       {needsSetup ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6 text-center">
           <div className="text-6xl">🏠</div>
-          <h2 className="text-2xl font-bold text-stone-800">Welcome to BoardRoom!</h2>
-          <p className="text-stone-400">Set up your family to start posting.</p>
+          <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100">Welcome to BoardRoom!</h2>
+          <p className="text-stone-400 text-sm">Your family&apos;s digital sticky note board. Set up your family to get started.</p>
           <button
             onClick={() => router.push("/setup")}
-            className="px-6 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium hover:bg-amber-400 transition-colors"
+            className="px-6 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium hover:bg-amber-400 transition-colors text-sm"
           >
-            Set Up Family
+            Set Up Family →
           </button>
         </div>
       ) : family && (
