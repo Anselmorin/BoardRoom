@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
-/* Force class-based dark mode — ignore system preference */
-@media (prefers-color-scheme: dark) {
-  :root:not(.dark) {
-    color-scheme: light;
-  }
-}
+/* Tailwind v4: force class-based dark mode, ignore system preference */
+@variant dark (&:where(.dark, .dark *));
 
-/* Light mode base colors (always default) */
+/* Always light by default — never follow system dark mode */
 :root {
-  --bg-primary: #fffbeb;
-  --bg-secondary: #ffffff;
-  --text-primary: #1c1917;
-  --text-secondary: #78716c;
   color-scheme: light;
 }
 
-/* Dark mode only when .dark class is explicitly set */
 html.dark {
   color-scheme: dark;
+}
+
+/* Block system dark mode from affecting non-.dark html */
+@media (prefers-color-scheme: dark) {
+  html:not(.dark) {
+    color-scheme: light;
+    background-color: #fffbeb;
+    color: #1c1917;
+  }
 }
 
 @theme {
