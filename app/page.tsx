@@ -407,7 +407,8 @@ export default function HomePage() {
           family={family}
           onAuth={handleAuth}
           onClose={() => { setShowAuth(false); setPendingAction(""); }}
-          action={pendingAction === "like" ? "Who's liking this? ❤️" : "Who's commenting? 💬"}
+          action={pendingAction === "like" ? "Who's reacting?" : "Who's commenting? 💬"}
+          reactionType={pendingReactionType}
         />
       ) : (
         <AuthPopup

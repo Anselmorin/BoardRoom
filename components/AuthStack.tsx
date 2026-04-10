@@ -3,17 +3,19 @@
 import { useState } from "react";
 import { Family, FamilyMember } from "@/lib/types";
 import UserAvatar from "./UserAvatar";
+import { PixelReaction } from "./PixelHeart";
 
 interface AuthStackProps {
   family: Family;
   onAuth: (member: FamilyMember) => void;
   onClose: () => void;
   action?: string;
+  reactionType?: "heart" | "thumbsup";
 }
 
 type AuthStep = "pick" | "pin" | "success";
 
-export default function AuthStack({ family, onAuth, onClose, action }: AuthStackProps) {
+export default function AuthStack({ family, onAuth, onClose, action, reactionType = "heart" }: AuthStackProps) {
   const [step, setStep] = useState<AuthStep>("pick");
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [pin, setPin] = useState("");
@@ -32,13 +34,10 @@ export default function AuthStack({ family, onAuth, onClose, action }: AuthStack
     const newPin = pin + digit;
     setPin(newPin);
     if (newPin.length === 4) {
-      // Check PIN
       setTimeout(() => {
         if (selectedMember && newPin === selectedMember.pin) {
           setStep("success");
-          setTimeout(() => {
-            onAuth(selectedMember);
-          }, 800);
+          setTimeout(() => onAuth(selectedMember), 800);
         } else {
           setShaking(true);
           setTimeout(() => {
@@ -59,55 +58,36 @@ export default function AuthStack({ family, onAuth, onClose, action }: AuthStack
       style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
       onClick={onClose}
     >
-      {/* Card stack */}
-      <div className="relative w-full max-w-sm mb-6" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-sm mb-6" onClick={e => e.stopPropagation()}>
+        <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-700 overflow-hidden">
 
-        {/* Card 1 — Pick member (always rendered as base) */}
-        <div
-          className="absolute inset-0 bg-white dark:bg-stone-800 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-700 transition-all duration-300"
-          style={{
-            transform: step === "pick" ? "translateX(0) rotate(0deg)" : "translateX(-12px) rotate(-2deg) scale(0.97)",
-            zIndex: 1,
-          }}
-        >
-          <div className="p-6">
-            <p className="text-xs text-stone-400 uppercase tracking-widest mb-1 text-center">
-              {action || "Who are you?"}
-            </p>
-            <h2 className="text-lg font-bold text-stone-800 dark:text-stone-100 text-center mb-4">
-              Pick your name
-            </h2>
-            <div className="grid grid-cols-3 gap-3">
-              {family.members.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => handlePickMember(m)}
-                  className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-                >
-                  <UserAvatar name={m.name} color={m.color} photo={m.photo} size="md" />
-                  <span className="text-xs text-stone-600 dark:text-stone-300 font-medium">{m.name}</span>
-                </button>
-              ))}
+          {/* Step 1: Pick member */}
+          {step === "pick" && (
+            <div className="p-6 animate-fade-in">
+              <p className="text-xs text-stone-400 uppercase tracking-widest mb-1 text-center">
+                {action || "Who are you?"}
+              </p>
+              <h2 className="text-lg font-bold text-stone-800 dark:text-stone-100 text-center mb-5">
+                Pick your name
+              </h2>
+              <div className="grid grid-cols-3 gap-3">
+                {family.members.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => handlePickMember(m)}
+                    className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+                  >
+                    <UserAvatar name={m.name} color={m.color} photo={m.photo} size="md" />
+                    <span className="text-xs text-stone-600 dark:text-stone-300 font-medium">{m.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* Card 2 — PIN entry (slides in on top) */}
-        <div
-          className="relative bg-white dark:bg-stone-800 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-700 transition-all duration-400"
-          style={{
-            transform: step === "pick"
-              ? "translateX(100%) rotate(4deg)"
-              : step === "pin"
-              ? "translateX(0) rotate(0deg)"
-              : "translateX(-100%) rotate(-4deg)",
-            opacity: step === "pick" ? 0 : 1,
-            zIndex: 2,
-            minHeight: "320px",
-          }}
-        >
-          {selectedMember && (
-            <div className="p-6">
+          {/* Step 2: PIN */}
+          {step === "pin" && selectedMember && (
+            <div className="p-6 animate-fade-in">
               <button
                 onClick={() => { setStep("pick"); setPin(""); setError(""); }}
                 className="text-xs text-stone-400 mb-4 flex items-center gap-1 hover:text-stone-600"
@@ -122,9 +102,7 @@ export default function AuthStack({ family, onAuth, onClose, action }: AuthStack
               </div>
 
               {/* PIN dots */}
-              <div
-                className={`flex justify-center gap-4 mb-6 ${shaking ? "animate-bounce" : ""}`}
-              >
+              <div className={`flex justify-center gap-4 mb-6 ${shaking ? "animate-bounce" : ""}`}>
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
@@ -159,25 +137,22 @@ export default function AuthStack({ family, onAuth, onClose, action }: AuthStack
               </div>
             </div>
           )}
-        </div>
 
-        {/* Card 3 — Success */}
-        {step === "success" && selectedMember && (
-          <div
-            className="absolute inset-0 rounded-3xl flex flex-col items-center justify-center gap-3 animate-pop"
-            style={{
-              background: selectedMember.color + "15",
-              border: `2px solid ${selectedMember.color}40`,
-              zIndex: 3,
-              minHeight: "320px",
-            }}
-          >
-            <div className="text-5xl animate-bounce">❤️</div>
-            <p className="font-bold text-lg" style={{ color: selectedMember.color }}>
-              Hey {selectedMember.name}!
-            </p>
-          </div>
-        )}
+          {/* Step 3: Success */}
+          {step === "success" && selectedMember && (
+            <div
+              className="p-8 flex flex-col items-center justify-center gap-3 animate-pop"
+              style={{ background: selectedMember.color + "15", minHeight: "220px" }}
+            >
+              <div className="animate-bounce">
+                <PixelReaction type={reactionType} color={selectedMember.color} size={40} />
+              </div>
+              <p className="font-bold text-lg" style={{ color: selectedMember.color }}>
+                Hey {selectedMember.name}!
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
