@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Note, FamilyMember, Comment } from "@/lib/types";
+import { Note, FamilyMember } from "@/lib/types";
 import UserAvatar from "./UserAvatar";
-import { PixelHeart } from "./PixelHeart";
+import { PixelReaction } from "./PixelHeart";
 
 interface NoteDetailProps {
   note: Note;
@@ -27,19 +27,21 @@ export default function NoteDetail({
   onClose,
 }: NoteDetailProps) {
   const [commentText, setCommentText] = useState("");
-  const likes = note.likes || [];
   const comments = note.comments || [];
-  const hasLiked = currentUser ? likes.includes(currentUser.id) : false;
+  const reactions = note.reactions || [];
+  // Merge legacy likes as heart reactions
+  const allReactions = [
+    ...reactions,
+    ...(note.likes || []).filter(id => !reactions.find(r => r.memberId === id)).map(id => ({ memberId: id, type: 'heart' as const }))
+  ];
 
   const getMember = (id: string) => members.find((m) => m.id === id);
 
   const handleComment = () => {
-    if (!commentText.trim() || !currentUser) return;
+    if (!commentText.trim()) return;
     onComment(note.id, commentText.trim());
     setCommentText("");
   };
-
-  const likedByNames = likes.map((id) => getMember(id)?.name).filter(Boolean);
 
   return (
     <div
@@ -48,61 +50,58 @@ export default function NoteDetail({
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
-        className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-md border border-stone-200 dark:border-stone-700 animate-slide-up flex flex-col max-h-[85vh]"
+        className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-md border border-stone-200 dark:border-stone-700 animate-slide-up flex flex-col"
+        style={{ maxHeight: "85vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-700">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-700 shrink-0">
           <div className="flex items-center gap-2">
-            {author && (
-              <UserAvatar name={author.name} color={author.color} photo={author.photo} size="sm" />
-            )}
+            {author && <UserAvatar name={author.name} color={author.color} photo={author.photo} size="sm" />}
             <div>
               <p className="text-sm font-medium text-stone-800 dark:text-stone-100">{author?.name || "Unknown"}</p>
               <p className="text-xs text-stone-400">{new Date(note.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {onEdit && currentUser?.id === note.authorId && (
-              <button onClick={onEdit} className="text-xs text-amber-500 hover:text-amber-400 px-2 py-1">Edit</button>
-            )}
+            {onEdit && <button onClick={onEdit} className="text-xs text-amber-500 hover:text-amber-400 px-2 py-1">Edit</button>}
             <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 text-xl leading-none">×</button>
           </div>
         </div>
 
-        {/* Content */}
+        {/* Scrollable content */}
         <div className="overflow-y-auto flex-1">
+          {/* Note content */}
           <div className="px-5 py-4">
             <p className="text-stone-800 dark:text-stone-200 text-base leading-relaxed whitespace-pre-wrap">{note.content}</p>
           </div>
 
-          {/* Likes */}
-          <div className="px-5 pb-3 flex items-center gap-3">
+          {/* Reactions row */}
+          <div className="px-5 pb-4 flex items-center gap-3 flex-wrap">
+            {/* Like button */}
             <button
               onClick={() => onLike(note.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                hasLiked
-                  ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
-                  : "bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-              }`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-600"
             >
-              <PixelHeart color={hasLiked ? (currentUser?.color || '#f87171') : '#d6d3d1'} size={14} />
-              <span>{hasLiked ? "Liked" : "Like"}</span>
+              <PixelReaction type="heart" color="#d6d3d1" size={13} />
+              <span>React</span>
             </button>
-            {likes.length > 0 && (
-              <div className="flex items-center gap-2">
+
+            {/* Stacked reactions */}
+            {allReactions.length > 0 && (
+              <div className="flex items-center gap-1.5">
                 <div className="flex -space-x-0.5">
-                  {likes.map((likerId) => {
-                    const liker = members.find(m => m.id === likerId);
+                  {allReactions.map((r) => {
+                    const member = getMember(r.memberId);
                     return (
-                      <span key={likerId} title={liker?.name}>
-                        <PixelHeart color={liker?.color || '#f87171'} size={16} />
+                      <span key={r.memberId} title={`${member?.name}: ${r.type}`}>
+                        <PixelReaction type={r.type} color={member?.color || '#f87171'} size={16} />
                       </span>
                     );
                   })}
                 </div>
                 <p className="text-xs text-stone-400">
-                  {likedByNames.slice(0, 3).join(", ")}{likedByNames.length > 3 ? ` +${likedByNames.length - 3}` : ""}
+                  {allReactions.map(r => getMember(r.memberId)?.name).filter(Boolean).slice(0, 3).join(", ")}
                 </p>
               </div>
             )}
@@ -116,9 +115,7 @@ export default function NoteDetail({
                 const commenter = getMember(c.authorId);
                 return (
                   <div key={c.id} className="flex gap-2">
-                    {commenter && (
-                      <UserAvatar name={commenter.name} color={commenter.color} photo={commenter.photo} size="sm" />
-                    )}
+                    {commenter && <UserAvatar name={commenter.name} color={commenter.color} photo={commenter.photo} size="sm" />}
                     <div className="flex-1 bg-stone-50 dark:bg-stone-700/50 rounded-xl px-3 py-2">
                       <p className="text-xs font-medium text-stone-600 dark:text-stone-300 mb-0.5">{commenter?.name || "Unknown"}</p>
                       <p className="text-sm text-stone-800 dark:text-stone-200">{c.content}</p>
@@ -130,9 +127,9 @@ export default function NoteDetail({
           )}
         </div>
 
-        {/* Comment input */}
-        {currentUser && (
-          <div className="px-4 py-3 border-t border-stone-200 dark:border-stone-700 flex gap-2 items-center">
+        {/* Comment input — only show if logged in */}
+        {currentUser ? (
+          <div className="px-4 py-3 border-t border-stone-200 dark:border-stone-700 flex gap-2 items-center shrink-0">
             <UserAvatar name={currentUser.name} color={currentUser.color} photo={currentUser.photo} size="sm" />
             <input
               type="text"
@@ -145,15 +142,13 @@ export default function NoteDetail({
             <button
               onClick={handleComment}
               disabled={!commentText.trim()}
-              className="w-8 h-8 rounded-full bg-amber-500 text-stone-900 flex items-center justify-center text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-amber-400 transition-colors"
+              className="w-8 h-8 rounded-full bg-amber-500 text-stone-900 flex items-center justify-center text-sm font-bold disabled:opacity-30 hover:bg-amber-400 transition-colors"
             >
               ↑
             </button>
           </div>
-        )}
-
-        {!currentUser && (
-          <div className="px-4 py-3 border-t border-stone-200 dark:border-stone-700 text-center">
+        ) : (
+          <div className="px-4 py-3 border-t border-stone-200 dark:border-stone-700 text-center shrink-0">
             <p className="text-xs text-stone-400">Tap your avatar to sign in and comment</p>
           </div>
         )}
