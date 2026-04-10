@@ -20,6 +20,8 @@ import Clock from "@/components/Clock";
 import UserAvatar from "@/components/UserAvatar";
 import ThemePanel from "@/components/ThemePanel";
 import AccountPage from "@/components/AccountPage";
+import NoteDetail from "@/components/NoteDetail";
+import AuthStack from "@/components/AuthStack";
 
 export default function HomePage() {
   const router = useRouter();
@@ -37,6 +39,9 @@ export default function HomePage() {
   const [showTheme, setShowTheme] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [accountMember, setAccountMember] = useState<FamilyMember | null>(null);
+  const [detailNote, setDetailNote] = useState<Note | null>(null);
+  const [pendingLikeId, setPendingLikeId] = useState<string | null>(null);
+  const [pendingCommentPayload, setPendingCommentPayload] = useState<{ noteId: string; content: string } | null>(null);
 
   useEffect(() => {
     const fam = getFamily();
@@ -105,9 +110,33 @@ export default function HomePage() {
     } else if (pendingAction === "account") {
       setAccountMember(user);
       setShowAccount(true);
+    } else if (pendingAction === "like" && pendingLikeId) {
+      // Like with this specific user (don't persist as currentUser)
+      const allNotes = getNotes();
+      const updated = allNotes.map((n) => {
+        if (n.id !== pendingLikeId) return n;
+        const likes = n.likes || [];
+        const hasLiked = likes.includes(user.id);
+        return { ...n, likes: hasLiked ? likes.filter((id) => id !== user.id) : [...likes, user.id] };
+      });
+      saveNotes(updated);
+      setNotes(updated);
+      setDetailNote(prev => prev?.id === pendingLikeId ? updated.find(n => n.id === pendingLikeId) || null : prev);
+      setPendingLikeId(null);
+      setCurrentUser(null); // don't stay logged in
+    } else if (pendingAction === "comment" && pendingCommentPayload) {
+      const { noteId, content } = pendingCommentPayload;
+      const newComment = { id: crypto.randomUUID(), authorId: user.id, content, createdAt: new Date().toISOString() };
+      const allNotes = getNotes();
+      const updated = allNotes.map((n) => n.id === noteId ? { ...n, comments: [...(n.comments || []), newComment] } : n);
+      saveNotes(updated);
+      setNotes(updated);
+      setDetailNote(prev => prev?.id === noteId ? updated.find(n => n.id === noteId) || null : prev);
+      setPendingCommentPayload(null);
+      setCurrentUser(null); // don't stay logged in
     }
     setPendingAction("");
-  }, [pendingAction]);
+  }, [pendingAction, pendingLikeId, pendingCommentPayload]);
 
   const handleAvatarTap = useCallback((member?: FamilyMember) => {
     // If tapping a specific member avatar in the row, auth as that member
@@ -186,6 +215,38 @@ export default function HomePage() {
     setShowNoteForm(false);
     setEditingNote(null);
   };
+
+  const handleLike = useCallback((noteId: string) => {
+    if (!currentUser) return;
+    const allNotes = getNotes();
+    const updated = allNotes.map((n) => {
+      if (n.id !== noteId) return n;
+      const likes = n.likes || [];
+      const hasLiked = likes.includes(currentUser.id);
+      return { ...n, likes: hasLiked ? likes.filter((id) => id !== currentUser.id) : [...likes, currentUser.id] };
+    });
+    saveNotes(updated);
+    setNotes(updated);
+    setDetailNote(prev => prev?.id === noteId ? updated.find(n => n.id === noteId) || null : prev);
+  }, [currentUser]);
+
+  const handleComment = useCallback((noteId: string, content: string) => {
+    if (!currentUser) return;
+    const allNotes = getNotes();
+    const newComment = {
+      id: crypto.randomUUID(),
+      authorId: currentUser.id,
+      content,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = allNotes.map((n) => {
+      if (n.id !== noteId) return n;
+      return { ...n, comments: [...(n.comments || []), newComment] };
+    });
+    saveNotes(updated);
+    setNotes(updated);
+    setDetailNote(prev => prev?.id === noteId ? updated.find(n => n.id === noteId) || null : prev);
+  }, [currentUser]);
 
   const handleDeleteNote = () => {
     if (!editingNote) return;
@@ -289,9 +350,12 @@ export default function HomePage() {
         <NoteBoard
           notes={visibleNotes}
           members={family.members}
-          onNoteClick={(note) => {
-            setEditingNote(note);
-            setShowNoteForm(true);
+          currentUserId={currentUser?.id ?? ""}
+          onNoteClick={(note) => setDetailNote(note)}
+          onLike={(noteId) => {
+            setPendingLikeId(noteId);
+            setPendingAction("like");
+            setShowAuth(true);
           }}
           onNewNote={() => {
             quickPick("new-note", () => {
@@ -324,15 +388,22 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Auth popup */}
-      {showAuth && family && (
+      {/* Auth — use AuthStack for like/comment (animated card stack), AuthPopup for others */}
+      {showAuth && family && (pendingAction === "like" || pendingAction === "comment" ? (
+        <AuthStack
+          family={family}
+          onAuth={handleAuth}
+          onClose={() => { setShowAuth(false); setPendingAction(""); }}
+          action={pendingAction === "like" ? "Who's liking this? ❤️" : "Who's commenting? 💬"}
+        />
+      ) : (
         <AuthPopup
           family={family}
           onAuth={handleAuth}
           onClose={() => { setShowAuth(false); setPendingAction(""); }}
           action={pendingAction === "new-note" ? "Post a new note" : undefined}
         />
-      )}
+      ))}
 
       {/* Note form */}
       {showNoteForm && currentUser && family && (
@@ -379,6 +450,31 @@ export default function HomePage() {
         />
       )}
 
+      {/* Note detail — likes + comments */}
+      {detailNote && family && (
+        <NoteDetail
+          note={detailNote}
+          author={family.members.find(m => m.id === detailNote.authorId)}
+          members={family.members}
+          currentUser={currentUser}
+          onLike={(noteId) => {
+            setPendingLikeId(noteId);
+            setPendingAction("like");
+            setShowAuth(true);
+          }}
+          onComment={(noteId, content) => {
+            setPendingCommentPayload({ noteId, content });
+            setPendingAction("comment");
+            setShowAuth(true);
+          }}
+          onEdit={detailNote.authorId ? () => {
+            setEditingNote(detailNote);
+            setDetailNote(null);
+            setShowNoteForm(true);
+          } : undefined}
+          onClose={() => setDetailNote(null)}
+        />
+      )}
     </div>
   );
 }

@@ -39,6 +39,13 @@ export interface Family {
   members: FamilyMember[];
 }
 
+export interface Comment {
+  id: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface Note {
   id: string;
   authorId: string;
@@ -50,6 +57,8 @@ export interface Note {
   color: string;
   createdAt: string;
   updatedAt: string;
+  likes?: string[]; // array of member IDs who liked
+  comments?: Comment[];
 }
 
 export interface NoteInput {

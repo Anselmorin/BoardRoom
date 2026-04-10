@@ -7,14 +7,18 @@ import ReminderNote from "./ReminderNote";
 interface NoteBoardProps {
   notes: Note[];
   members: FamilyMember[];
+  currentUserId: string;
   onNoteClick: (note: Note) => void;
+  onLike: (noteId: string) => void;
   onNewNote: () => void;
 }
 
 export default function NoteBoard({
   notes,
   members,
+  currentUserId,
   onNoteClick,
+  onLike,
   onNewNote,
 }: NoteBoardProps) {
   const getMember = (id: string) => members.find((m) => m.id === id);
@@ -49,7 +53,9 @@ export default function NoteBoard({
                   note={note}
                   author={getMember(note.authorId)}
                   members={members}
+                  currentUserId={currentUserId}
                   onClick={() => onNoteClick(note)}
+                  onLike={onLike}
                   index={i}
                 />
               ))}
