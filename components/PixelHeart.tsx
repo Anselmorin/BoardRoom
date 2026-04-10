@@ -25,14 +25,15 @@ export function PixelHeart({ color, size = 14 }: PixelIconProps) {
 }
 
 export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
+  // Classic pixel art thumbs up: thumb pointing up on left, fist on right
   const grid = [
-    [0,0,0,1,0,0,0],
-    [0,0,1,1,0,0,0],
+    [0,0,1,0,0,0,0],
+    [0,1,1,0,0,0,0],
     [0,1,1,1,1,1,0],
     [1,1,1,1,1,1,1],
     [1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1],
     [0,1,1,1,1,1,0],
-    [0,1,0,0,0,1,0],
   ];
   const cols = 7, rows = 7;
   return (
@@ -57,13 +58,13 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
     [0,0,0,1,0,0,0],
   ];
   const thumbGrid = [
-    [0,0,0,1,0,0,0],
-    [0,0,1,1,0,0,0],
+    [0,0,1,0,0,0,0],
+    [0,1,1,0,0,0,0],
     [0,1,1,1,1,1,0],
     [1,1,1,1,1,1,1],
     [1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1],
     [0,1,1,1,1,1,0],
-    [0,1,0,0,0,1,0],
   ];
 
   const grid = type === "heart" ? heartGrid : thumbGrid;
