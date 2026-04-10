@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 interface PixelIconProps {
   color: string;
   size?: number;
@@ -42,6 +44,70 @@ export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
 
 export function PixelReaction({ type, color, size = 14 }: { type: "heart" | "thumbsup"; color: string; size?: number }) {
   return type === "heart" ? <PixelHeart color={color} size={size} /> : <PixelThumbsUp color={color} size={size} />;
+}
+
+// Animated build-up version — pixels appear one at a time
+export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart" | "thumbsup"; color: string; size?: number }) {
+  const heartGrid = [
+    [0,1,1,0,1,1,0],
+    [1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1],
+    [0,1,1,1,1,1,0],
+    [0,0,1,1,1,0,0],
+    [0,0,0,1,0,0,0],
+  ];
+  const thumbGrid = [
+    [0,0,0,1,0,0,0],
+    [0,0,1,1,0,0,0],
+    [0,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1],
+    [0,1,1,1,1,1,0],
+    [0,1,0,0,0,1,0],
+  ];
+
+  const grid = type === "heart" ? heartGrid : thumbGrid;
+  const cols = 7;
+  const rows = grid.length;
+
+  // Collect all pixel positions in a random order
+  const allPixels: { x: number; y: number }[] = [];
+  grid.forEach((row, y) => row.forEach((on, x) => { if (on) allPixels.push({ x, y }); }));
+
+  // Shuffle for random build-up order
+  const shuffled = [...allPixels].sort(() => Math.random() - 0.5);
+
+  const [visibleCount, setVisibleCount] = useState(0);
+  const visibleSet = new Set(shuffled.slice(0, visibleCount).map(p => `${p.x}-${p.y}`));
+
+  useEffect(() => {
+    if (visibleCount >= shuffled.length) return;
+    const delay = visibleCount === 0 ? 0 : 35;
+    const t = setTimeout(() => setVisibleCount(v => v + 1), delay);
+    return () => clearTimeout(t);
+  }, [visibleCount, shuffled.length]);
+
+  return (
+    <svg
+      width={size}
+      height={size * rows / cols}
+      viewBox={`0 0 ${cols} ${rows}`}
+      style={{ imageRendering: "pixelated", display: "block" }}
+    >
+      {grid.flatMap((row, y) =>
+        row.map((on, x) =>
+          on && visibleSet.has(`${x}-${y}`) ? (
+            <rect
+              key={`${x}-${y}`}
+              x={x} y={y} width={1} height={1}
+              fill={color}
+              opacity={1}
+            />
+          ) : null
+        )
+      )}
+    </svg>
+  );
 }
 
 interface ReactionPickerProps {

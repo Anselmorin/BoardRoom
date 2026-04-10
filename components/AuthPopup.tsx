@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Family, FamilyMember } from "@/lib/types";
+import { PixelReactionAnimated } from "./PixelHeart";
 import UserAvatar from "./UserAvatar";
 
 interface AuthPopupProps {
@@ -140,7 +141,7 @@ export default function AuthPopup({ family, onAuth, onClose, action }: AuthPopup
               className="p-8 flex flex-col items-center justify-center gap-3 animate-pop"
               style={{ background: selected.color + "15", minHeight: "220px" }}
             >
-              <div className="text-5xl animate-bounce">✓</div>
+              <PixelReactionAnimated type="heart" color={selected.color} size={48} />
               <p className="font-bold text-lg" style={{ color: selected.color }}>
                 Hey {selected.name}!
               </p>

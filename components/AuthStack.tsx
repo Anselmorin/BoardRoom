@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Family, FamilyMember } from "@/lib/types";
 import UserAvatar from "./UserAvatar";
-import { PixelReaction } from "./PixelHeart";
+import { PixelReactionAnimated } from "./PixelHeart";
 
 interface AuthStackProps {
   family: Family;
@@ -144,9 +144,7 @@ export default function AuthStack({ family, onAuth, onClose, action, reactionTyp
               className="p-8 flex flex-col items-center justify-center gap-3 animate-pop"
               style={{ background: selectedMember.color + "15", minHeight: "220px" }}
             >
-              <div className="animate-bounce">
-                <PixelReaction type={reactionType} color={selectedMember.color} size={40} />
-              </div>
+              <PixelReactionAnimated type={reactionType} color={selectedMember.color} size={48} />
               <p className="font-bold text-lg" style={{ color: selectedMember.color }}>
                 Hey {selectedMember.name}!
               </p>
