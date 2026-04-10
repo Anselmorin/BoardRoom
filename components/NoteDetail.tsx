@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Note, FamilyMember, Comment } from "@/lib/types";
 import UserAvatar from "./UserAvatar";
+import { PixelHeart } from "./PixelHeart";
 
 interface NoteDetailProps {
   note: Note;
@@ -85,22 +86,18 @@ export default function NoteDetail({
                   : "bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20"
               }`}
             >
-              {hasLiked ? "❤️" : "🤍"} {hasLiked ? "Liked" : "Like"}
+              <PixelHeart color={hasLiked ? (currentUser?.color || '#f87171') : '#d6d3d1'} size={14} />
+              <span>{hasLiked ? "Liked" : "Like"}</span>
             </button>
             {likes.length > 0 && (
-              <div className="flex items-center gap-1.5">
-                <div className="flex -space-x-1.5">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-0.5">
                   {likes.map((likerId) => {
                     const liker = members.find(m => m.id === likerId);
                     return (
-                      <div
-                        key={likerId}
-                        className="w-5 h-5 rounded-full border-2 border-white dark:border-stone-800 flex items-center justify-center text-[8px] text-white"
-                        style={{ backgroundColor: liker?.color || '#f87171' }}
-                        title={liker?.name}
-                      >
-                        ❤
-                      </div>
+                      <span key={likerId} title={liker?.name}>
+                        <PixelHeart color={liker?.color || '#f87171'} size={16} />
+                      </span>
                     );
                   })}
                 </div>

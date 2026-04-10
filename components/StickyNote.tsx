@@ -2,6 +2,7 @@
 
 import { Note, FamilyMember } from "@/lib/types";
 import { useTheme } from "@/lib/theme";
+import { PixelHeart } from "./PixelHeart";
 
 interface StickyNoteProps {
   note: Note;
@@ -134,28 +135,23 @@ export default function StickyNote({
               className="flex items-center gap-1 text-xs transition-colors"
             >
               {likes.length > 0 ? (
-                <span className="flex -space-x-1">
+                <span className="flex -space-x-0.5 items-center">
                   {likes.slice(0, 4).map((likerId) => {
                     const liker = members.find(m => m.id === likerId);
                     return (
-                      <span
-                        key={likerId}
-                        className="inline-block w-3.5 h-3.5 rounded-full border border-white dark:border-stone-800 text-[8px] leading-[14px] text-center"
-                        style={{ backgroundColor: liker?.color || '#f87171', color: 'white' }}
-                        title={liker?.name}
-                      >
-                        ❤
+                      <span key={likerId} title={liker?.name} className="drop-shadow-sm">
+                        <PixelHeart color={liker?.color || '#f87171'} size={12} />
                       </span>
                     );
                   })}
                   {likes.length > 4 && (
-                    <span className="inline-block w-3.5 h-3.5 rounded-full border border-white dark:border-stone-800 bg-stone-300 text-[7px] leading-[14px] text-center text-stone-600">
-                      +{likes.length - 4}
-                    </span>
+                    <span className="text-[9px] text-stone-400 ml-0.5">+{likes.length - 4}</span>
                   )}
                 </span>
               ) : (
-                <span className="text-stone-300 dark:text-stone-600">🤍</span>
+                <span className="opacity-20">
+                  <PixelHeart color="#888" size={12} />
+                </span>
               )}
             </button>
           </div>
