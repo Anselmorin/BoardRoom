@@ -471,8 +471,9 @@ export default function HomePage() {
           author={family.members.find(m => m.id === detailNote.authorId)}
           members={family.members}
           currentUser={currentUser}
-          onLike={(noteId) => {
+          onLike={(noteId, reactionType) => {
             setPendingLikeId(noteId);
+            setPendingReactionType(reactionType || "heart");
             setPendingAction("like");
             setShowAuth(true);
           }}
