@@ -41,6 +41,7 @@ export default function HomePage() {
   const [accountMember, setAccountMember] = useState<FamilyMember | null>(null);
   const [detailNote, setDetailNote] = useState<Note | null>(null);
   const [pendingLikeId, setPendingLikeId] = useState<string | null>(null);
+  const [pendingReactionType, setPendingReactionType] = useState<"heart" | "thumbsup">("heart");
   const [pendingCommentPayload, setPendingCommentPayload] = useState<{ noteId: string; content: string } | null>(null);
 
   useEffect(() => {
@@ -111,13 +112,24 @@ export default function HomePage() {
       setAccountMember(user);
       setShowAccount(true);
     } else if (pendingAction === "like" && pendingLikeId) {
-      // Like with this specific user (don't persist as currentUser)
+      // React with heart or thumbsup (don't persist as currentUser)
       const allNotes = getNotes();
       const updated = allNotes.map((n) => {
         if (n.id !== pendingLikeId) return n;
-        const likes = n.likes || [];
-        const hasLiked = likes.includes(user.id);
-        return { ...n, likes: hasLiked ? likes.filter((id) => id !== user.id) : [...likes, user.id] };
+        const reactions = n.reactions || [];
+        const existingIdx = reactions.findIndex(r => r.memberId === user.id);
+        let newReactions;
+        if (existingIdx >= 0 && reactions[existingIdx].type === pendingReactionType) {
+          // Same type — remove (toggle off)
+          newReactions = reactions.filter((_, i) => i !== existingIdx);
+        } else if (existingIdx >= 0) {
+          // Different type — replace
+          newReactions = reactions.map((r, i) => i === existingIdx ? { memberId: user.id, type: pendingReactionType } : r);
+        } else {
+          // New reaction
+          newReactions = [...reactions, { memberId: user.id, type: pendingReactionType }];
+        }
+        return { ...n, reactions: newReactions };
       });
       saveNotes(updated);
       setNotes(updated);
@@ -352,8 +364,9 @@ export default function HomePage() {
           members={family.members}
           currentUserId={currentUser?.id ?? ""}
           onNoteClick={(note) => setDetailNote(note)}
-          onLike={(noteId) => {
+          onLike={(noteId, reactionType) => {
             setPendingLikeId(noteId);
+            setPendingReactionType(reactionType || "heart");
             setPendingAction("like");
             setShowAuth(true);
           }}

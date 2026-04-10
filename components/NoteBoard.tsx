@@ -9,7 +9,7 @@ interface NoteBoardProps {
   members: FamilyMember[];
   currentUserId: string;
   onNoteClick: (note: Note) => void;
-  onLike: (noteId: string) => void;
+  onLike: (noteId: string, type: "heart" | "thumbsup") => void;
   onNewNote: () => void;
 }
 

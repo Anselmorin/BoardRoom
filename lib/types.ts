@@ -46,6 +46,13 @@ export interface Comment {
   createdAt: string;
 }
 
+export type ReactionType = "heart" | "thumbsup";
+
+export interface Reaction {
+  memberId: string;
+  type: ReactionType;
+}
+
 export interface Note {
   id: string;
   authorId: string;
@@ -57,7 +64,8 @@ export interface Note {
   color: string;
   createdAt: string;
   updatedAt: string;
-  likes?: string[]; // array of member IDs who liked
+  likes?: string[]; // legacy - kept for backward compat
+  reactions?: Reaction[];
   comments?: Comment[];
 }
 

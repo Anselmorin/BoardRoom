@@ -1,8 +1,9 @@
 "use client";
 
+import React from "react";
 import { Note, FamilyMember } from "@/lib/types";
 import { useTheme } from "@/lib/theme";
-import { PixelHeart } from "./PixelHeart";
+import { PixelReaction, ReactionPicker } from "./PixelHeart";
 
 interface StickyNoteProps {
   note: Note;
@@ -10,7 +11,7 @@ interface StickyNoteProps {
   members: FamilyMember[];
   currentUserId?: string;
   onClick: () => void;
-  onLike?: (noteId: string) => void;
+  onLike?: (noteId: string, type: "heart" | "thumbsup") => void;
   index: number;
 }
 
@@ -25,10 +26,15 @@ export default function StickyNote({
   onLike,
   index,
 }: StickyNoteProps) {
-  const likes = note.likes || [];
+  const [showPicker, setShowPicker] = React.useState(false);
   const comments = note.comments || [];
-  const hasLiked = currentUserId ? likes.includes(currentUserId) : false;
   const { noteFont, theme } = useTheme();
+  const reactions = note.reactions || [];
+  // Merge legacy likes as heart reactions
+  const allReactions = [
+    ...reactions,
+    ...(note.likes || []).filter(id => !reactions.find(r => r.memberId === id)).map(id => ({ memberId: id, type: 'heart' as const }))
+  ];
   const directedMembers = (note.recipientIds || [])
     .map((id) => members.find((m) => m.id === id))
     .filter(Boolean) as FamilyMember[];
@@ -123,37 +129,53 @@ export default function StickyNote({
             </>
           )}
 
-          {/* Likes (colored hearts) + Comments count */}
+          {/* Reactions (fanned playing-card style) + Comments count */}
           <div className="ml-auto flex items-center gap-2">
             {comments.length > 0 && (
-              <span className="flex items-center gap-0.5 text-xs text-stone-400">
-                💬 {comments.length}
-              </span>
+              <span className="text-[10px] text-stone-400">💬{comments.length}</span>
+            )}
+            <div className="relative">
+            {showPicker && (
+              <ReactionPicker
+                currentColor={author?.color || '#888'}
+                onPick={(type) => { onLike?.(note.id, type); setShowPicker(false); }}
+                onClose={() => setShowPicker(false)}
+              />
             )}
             <button
-              onClick={(e) => { e.stopPropagation(); onLike?.(note.id); }}
-              className="flex items-center gap-1 text-xs transition-colors"
+              onClick={(e) => { e.stopPropagation(); setShowPicker(p => !p); }}
+              className="relative flex items-center"
+              style={{ minWidth: allReactions.length > 0 ? `${8 + allReactions.slice(0, 5).length * 8}px` : '14px' }}
             >
-              {likes.length > 0 ? (
-                <span className="flex -space-x-0.5 items-center">
-                  {likes.slice(0, 4).map((likerId) => {
-                    const liker = members.find(m => m.id === likerId);
-                    return (
-                      <span key={likerId} title={liker?.name} className="drop-shadow-sm">
-                        <PixelHeart color={liker?.color || '#f87171'} size={12} />
-                      </span>
-                    );
-                  })}
-                  {likes.length > 4 && (
-                    <span className="text-[9px] text-stone-400 ml-0.5">+{likes.length - 4}</span>
-                  )}
-                </span>
+              {allReactions.length > 0 ? (
+                allReactions.slice(0, 5).map((r, i) => {
+                  const member = members.find(m => m.id === r.memberId);
+                  const total = Math.min(allReactions.length, 5);
+                  const angle = total === 1 ? 0 : (i - (total - 1) / 2) * 12;
+                  return (
+                    <span
+                      key={r.memberId}
+                      title={member?.name}
+                      className="absolute"
+                      style={{
+                        left: `${i * 8}px`,
+                        zIndex: i,
+                        transform: `rotate(${angle}deg)`,
+                        transformOrigin: 'bottom center',
+                        filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))',
+                      }}
+                    >
+                      <PixelReaction type={r.type} color={member?.color || '#f87171'} size={13} />
+                    </span>
+                  );
+                })
               ) : (
                 <span className="opacity-20">
-                  <PixelHeart color="#888" size={12} />
+                  <PixelReaction type="heart" color="#888" size={12} />
                 </span>
               )}
             </button>
+            </div>
           </div>
         </div>
       </div>
