@@ -472,15 +472,18 @@ export default function HomePage() {
           members={family.members}
           currentUser={currentUser}
           onLike={(noteId, reactionType) => {
+            // Close detail first so auth renders on top, not behind sheet
+            setDetailNote(null);
             setPendingLikeId(noteId);
             setPendingReactionType(reactionType || "heart");
             setPendingAction("like");
-            setShowAuth(true);
+            setTimeout(() => setShowAuth(true), 50);
           }}
           onComment={(noteId, content) => {
+            setDetailNote(null);
             setPendingCommentPayload({ noteId, content });
             setPendingAction("comment");
-            setShowAuth(true);
+            setTimeout(() => setShowAuth(true), 50);
           }}
           onEdit={detailNote.authorId ? () => {
             setEditingNote(detailNote);
