@@ -83,7 +83,7 @@ export default function NoteDetail({
               onClick={() => onLike(note.id, "heart")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-400"
             >
-              <span className="text-base leading-none">❤️</span>
+              <PixelReaction type="heart" color="#ef4444" size={16} />
               <span>Heart</span>
             </button>
             {/* Like (thumbs up) button */}
@@ -91,7 +91,7 @@ export default function NoteDetail({
               onClick={() => onLike(note.id, "thumbsup")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-400"
             >
-              <span className="text-base leading-none">👍</span>
+              <PixelReaction type="thumbsup" color="#f59e0b" size={16} />
               <span>Like</span>
             </button>
 

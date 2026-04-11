@@ -8,15 +8,14 @@ interface PixelIconProps {
 }
 
 export function PixelHeart({ color, size = 14 }: PixelIconProps) {
+  // Chunkier 5x4 grid — reads better at small sizes
   const grid = [
-    [0,1,1,0,1,1,0],
-    [1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1],
-    [0,1,1,1,1,1,0],
-    [0,0,1,1,1,0,0],
-    [0,0,0,1,0,0,0],
+    [0,1,0,1,0],
+    [1,1,1,1,1],
+    [0,1,1,1,0],
+    [0,0,1,0,0],
   ];
-  const cols = 7, rows = 6;
+  const cols = 5, rows = 4;
   return (
     <svg width={size} height={size * rows / cols} viewBox={`0 0 ${cols} ${rows}`} style={{ imageRendering: "pixelated", display: "block" }}>
       {grid.flatMap((row, y) => row.map((on, x) => on ? <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={color} /> : null))}
@@ -25,18 +24,15 @@ export function PixelHeart({ color, size = 14 }: PixelIconProps) {
 }
 
 export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
-  // Pixel art 👍 — thumb up top-left, palm/fist bottom-right
+  // Simple chunky 5x5 thumbs up — reads at small sizes
   const grid = [
-    [0,0,1,0,0,0,0,0],
-    [0,1,1,0,0,0,0,0],
-    [1,1,1,0,0,0,0,0],
-    [1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1],
-    [0,1,1,1,1,1,1,1],
-    [0,0,1,1,1,1,1,0],
+    [0,0,1,0,0],
+    [0,1,1,0,0],
+    [1,1,1,1,1],
+    [1,1,1,1,1],
+    [0,1,1,1,0],
   ];
-  const cols = 8, rows = 8;
+  const cols = 5, rows = 5;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${cols} ${rows}`} style={{ imageRendering: "pixelated", display: "block" }}>
       {grid.flatMap((row, y) => row.map((on, x) => on ? <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={color} /> : null))}
@@ -127,17 +123,17 @@ export function ReactionPicker({ onPick, onClose, currentColor }: ReactionPicker
     >
       <button
         onClick={() => { onPick("heart"); onClose(); }}
-        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90 text-xl"
+        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90"
         title="Heart"
       >
-        ❤️
+        <PixelHeart color={currentColor} size={20} />
       </button>
       <button
         onClick={() => { onPick("thumbsup"); onClose(); }}
-        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90 text-xl"
+        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90"
         title="Thumbs up"
       >
-        👍
+        <PixelThumbsUp color={currentColor} size={20} />
       </button>
     </div>
   );
