@@ -84,7 +84,7 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
 
   useEffect(() => {
     if (visibleCount >= shuffled.length) return;
-    const delay = visibleCount === 0 ? 0 : 35;
+    const delay = visibleCount === 0 ? 0 : 55;
     const t = setTimeout(() => setVisibleCount(v => v + 1), delay);
     return () => clearTimeout(t);
   }, [visibleCount, shuffled.length]);
