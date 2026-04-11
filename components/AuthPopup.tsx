@@ -34,7 +34,7 @@ export default function AuthPopup({ family, onAuth, onClose, action }: AuthPopup
       setTimeout(() => {
         if (selected && newPin === selected.pin) {
           setStep("success");
-          setTimeout(() => onAuth(selected), 1400);
+          setTimeout(() => onAuth(selected), 1800);
         } else {
           setShaking(true);
           setTimeout(() => {

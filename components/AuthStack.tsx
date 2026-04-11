@@ -37,7 +37,7 @@ export default function AuthStack({ family, onAuth, onClose, action, reactionTyp
       setTimeout(() => {
         if (selectedMember && newPin === selectedMember.pin) {
           setStep("success");
-          setTimeout(() => onAuth(selectedMember), 1400); // give pixel animation time to finish
+          setTimeout(() => onAuth(selectedMember), 1800); // wait for pixel animation to fully complete
         } else {
           setShaking(true);
           setTimeout(() => {
