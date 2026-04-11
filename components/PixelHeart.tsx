@@ -127,17 +127,17 @@ export function ReactionPicker({ onPick, onClose, currentColor }: ReactionPicker
     >
       <button
         onClick={() => { onPick("heart"); onClose(); }}
-        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90"
+        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90 text-xl"
         title="Heart"
       >
-        <PixelHeart color={currentColor} size={18} />
+        ❤️
       </button>
       <button
         onClick={() => { onPick("thumbsup"); onClose(); }}
-        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90"
+        className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors active:scale-90 text-xl"
         title="Thumbs up"
       >
-        <PixelThumbsUp color={currentColor} size={16} />
+        👍
       </button>
     </div>
   );
