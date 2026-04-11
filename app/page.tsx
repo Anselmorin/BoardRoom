@@ -21,6 +21,7 @@ import UserAvatar from "@/components/UserAvatar";
 import ThemePanel from "@/components/ThemePanel";
 import AccountPage from "@/components/AccountPage";
 import NoteDetail from "@/components/NoteDetail";
+import TrackerPanel from "@/components/TrackerPanel";
 import AuthStack from "@/components/AuthStack";
 
 export default function HomePage() {
@@ -40,6 +41,7 @@ export default function HomePage() {
   const [showAccount, setShowAccount] = useState(false);
   const [accountMember, setAccountMember] = useState<FamilyMember | null>(null);
   const [detailNote, setDetailNote] = useState<Note | null>(null);
+  const [showTracker, setShowTracker] = useState(false);
   const [pendingLikeId, setPendingLikeId] = useState<string | null>(null);
   const [pendingReactionType, setPendingReactionType] = useState<"heart" | "thumbsup">("heart");
   const [pendingCommentPayload, setPendingCommentPayload] = useState<{ noteId: string; content: string } | null>(null);
@@ -188,6 +190,16 @@ export default function HomePage() {
     setCurrentUser(null);
   };
 
+  const handleUpdateMember = useCallback((member: FamilyMember) => {
+    if (!family) return;
+    const updated = {
+      ...family,
+      members: family.members.map((m) => m.id === member.id ? member : m),
+    };
+    saveFamily(updated);
+    setFamily(updated);
+  }, [family]);
+
   const handleSaveNote = (data: NoteInput) => {
     if (!currentUser) return;
     const allNotes = getNotes();
@@ -201,6 +213,8 @@ export default function HomePage() {
               visibility: data.visibility,
               recipientId: data.recipientId,
               recipientIds: data.recipientIds,
+              dueAt: data.dueAt,
+              repeatRule: data.repeatRule,
               updatedAt: new Date().toISOString(),
             }
           : n
@@ -216,6 +230,8 @@ export default function HomePage() {
         visibility: data.visibility,
         recipientId: data.recipientId,
         recipientIds: data.recipientIds,
+        dueAt: data.dueAt,
+        repeatRule: data.repeatRule,
         color: "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -316,8 +332,11 @@ export default function HomePage() {
           {family && family.members.length > 0 && (
             <div className="flex -space-x-1.5">
               {family.members.slice(0, 4).map((m) => (
-                <div key={m.id} title={m.name}>
+                <div key={m.id} title={m.name} className="relative">
                   <UserAvatar name={m.name} color={m.color} photo={m.photo} size="sm" onClick={handleAvatarTap} />
+                  {m.sickMode && (
+                    <span className="absolute -top-0.5 -right-0.5 text-[10px]">🤒</span>
+                  )}
                 </div>
               ))}
               {family.members.length > 4 && (
@@ -327,6 +346,9 @@ export default function HomePage() {
               )}
             </div>
           )}
+
+          {/* Tracker button */}
+          <button onClick={() => setShowTracker(true)} className="text-lg" title="Tracker">👶</button>
 
           {/* Theme button */}
           <button onClick={() => setShowTheme(true)} className="text-lg" title="Themes">🎨</button>
@@ -491,6 +513,16 @@ export default function HomePage() {
             setShowNoteForm(true);
           } : undefined}
           onClose={() => setDetailNote(null)}
+        />
+      )}
+
+      {/* Tracker panel */}
+      {showTracker && family && (
+        <TrackerPanel
+          members={family.members}
+          currentUser={currentUser}
+          onUpdateMember={handleUpdateMember}
+          onClose={() => setShowTracker(false)}
         />
       )}
     </div>

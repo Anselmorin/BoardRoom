@@ -2,6 +2,7 @@
 
 import { Note, FamilyMember } from "@/lib/types";
 import { useTheme } from "@/lib/theme";
+import ReminderBadge, { isReminderDue } from "./ReminderBadge";
 
 interface ReminderNoteProps {
   note: Note;
@@ -23,7 +24,7 @@ export default function ReminderNote({
       className="w-full text-left animate-slide-up"
       style={{ animationDelay: `${index * 30}ms` }}
     >
-      <div className="relative p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:bg-stone-200/60 dark:hover:bg-stone-700/60 bg-stone-100/60 dark:bg-stone-800/60 border border-stone-200/30 dark:border-stone-700/30 flex items-start gap-3">
+      <div className={`relative p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:bg-stone-200/60 dark:hover:bg-stone-700/60 border border-stone-200/30 dark:border-stone-700/30 flex items-start gap-3 ${isReminderDue(note) ? "bg-red-50/80 dark:bg-red-900/20 border-red-200/50" : "bg-stone-100/60 dark:bg-stone-800/60"}`}>
         {/* Color indicator bar */}
         <div
           className="w-1 self-stretch rounded-full shrink-0"
@@ -40,6 +41,7 @@ export default function ReminderNote({
           >
             {note.content}
           </p>
+          <ReminderBadge note={note} />
           <div className="flex items-center gap-2 mt-1.5">
             <span className="text-xs text-stone-400">
               {author?.name || "Unknown"}

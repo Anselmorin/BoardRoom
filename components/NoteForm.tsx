@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Note, FamilyMember, NoteInput } from "@/lib/types";
+import { Note, FamilyMember, NoteInput, RepeatRule } from "@/lib/types";
 
 interface NoteFormProps {
   note?: Note | null;
@@ -28,6 +28,8 @@ export default function NoteForm({
     note?.visibility || "public"
   );
   const [recipientId, setRecipientId] = useState(note?.recipientId || "");
+  const [dueAt, setDueAt] = useState(note?.dueAt ? new Date(note.dueAt).toISOString().slice(0, 16) : "");
+  const [repeatRule, setRepeatRule] = useState<RepeatRule>(note?.repeatRule || "none");
   const [directedTo, setDirectedTo] = useState<string[]>(note?.recipientIds || []);
 
   const otherMembers = familyMembers.filter((m) => m.id !== currentUserId);
@@ -49,6 +51,8 @@ export default function NoteForm({
       visibility,
       recipientId: visibility === "private" ? recipientId : undefined,
       recipientIds: visibility === "public" && directedTo.length > 0 ? directedTo : undefined,
+      dueAt: type === "reminder" && dueAt ? new Date(dueAt).toISOString() : undefined,
+      repeatRule: type === "reminder" ? repeatRule : "none",
     });
   };
 
@@ -197,6 +201,39 @@ export default function NoteForm({
             </div>
           )}
         </div>
+
+        {/* Reminder timing (only for reminders) */}
+        {type === "reminder" && (
+          <div className="px-4 pb-3 space-y-3 border-b border-stone-200">
+            <div>
+              <label className="text-xs text-stone-400 uppercase tracking-wide mb-2 block">Due date & time (optional)</label>
+              <input
+                type="datetime-local"
+                value={dueAt}
+                onChange={e => setDueAt(e.target.value)}
+                className="w-full bg-stone-100 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-stone-400 uppercase tracking-wide mb-2 block">Repeat</label>
+              <select
+                value={repeatRule}
+                onChange={e => setRepeatRule(e.target.value as RepeatRule)}
+                className="w-full bg-stone-100 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              >
+                <option value="none">No repeat</option>
+                <option value="hourly">Every hour</option>
+                <option value="every2h">Every 2 hours</option>
+                <option value="every4h">Every 4 hours</option>
+                <option value="every6h">Every 6 hours</option>
+                <option value="every8h">Every 8 hours</option>
+                <option value="every12h">Every 12 hours</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="flex items-center justify-between p-4 border-t border-stone-200">
