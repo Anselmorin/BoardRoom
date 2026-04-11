@@ -24,10 +24,10 @@ export function PixelHeart({ color, size = 14 }: PixelIconProps) {
 }
 
 export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
-  // Thumbs up: extended thumb on top-left, rectangular fist body on right
+  // Thumbs up based on Ansel's design: thumb on top-right, fist on left/bottom
   const grid = [
-    [0,1,0,0,0,0],
-    [1,1,0,0,0,0],
+    [0,0,0,0,1,0],
+    [0,0,0,0,1,1],
     [1,1,1,1,1,1],
     [1,1,1,1,1,1],
     [1,1,1,1,1,1],
@@ -56,8 +56,8 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
     [0,0,0,1,0,0,0],
   ];
   const thumbGrid = [
-    [0,1,0,0,0,0],
-    [1,1,0,0,0,0],
+    [0,0,0,0,1,0],
+    [0,0,0,0,1,1],
     [1,1,1,1,1,1],
     [1,1,1,1,1,1],
     [1,1,1,1,1,1],
