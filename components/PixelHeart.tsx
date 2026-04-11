@@ -24,15 +24,16 @@ export function PixelHeart({ color, size = 14 }: PixelIconProps) {
 }
 
 export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
-  // Simple chunky 5x5 thumbs up — reads at small sizes
+  // Thumbs up: extended thumb on top-left, rectangular fist body on right
   const grid = [
-    [0,0,1,0,0],
-    [0,1,1,0,0],
-    [1,1,1,1,1],
-    [1,1,1,1,1],
-    [0,1,1,1,0],
+    [0,1,0,0,0,0],
+    [1,1,0,0,0,0],
+    [1,1,1,1,1,1],
+    [1,1,1,1,1,1],
+    [1,1,1,1,1,1],
+    [0,1,1,1,1,0],
   ];
-  const cols = 5, rows = 5;
+  const cols = 6, rows = 6;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${cols} ${rows}`} style={{ imageRendering: "pixelated", display: "block" }}>
       {grid.flatMap((row, y) => row.map((on, x) => on ? <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={color} /> : null))}
@@ -55,14 +56,12 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
     [0,0,0,1,0,0,0],
   ];
   const thumbGrid = [
-    [0,0,1,0,0,0,0,0],
-    [0,1,1,0,0,0,0,0],
-    [1,1,1,0,0,0,0,0],
-    [1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1],
-    [0,1,1,1,1,1,1,1],
-    [0,0,1,1,1,1,1,0],
+    [0,1,0,0,0,0],
+    [1,1,0,0,0,0],
+    [1,1,1,1,1,1],
+    [1,1,1,1,1,1],
+    [1,1,1,1,1,1],
+    [0,1,1,1,1,0],
   ];
 
   const grid = type === "heart" ? heartGrid : thumbGrid;
