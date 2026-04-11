@@ -419,23 +419,14 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-            {/* Guest bypass */}
-            <div className="mt-4 pt-4 border-t border-stone-100">
+            {/* No device? Join here */}
+            <div className="mt-4 pt-4 border-t border-stone-100 text-center">
+              <p className="text-xs text-stone-400 mb-2">Don&apos;t have an account yet?</p>
               <button
-                onClick={() => {
-                  const guest: FamilyMember = {
-                    id: "guest-" + Date.now(),
-                    name: "Guest",
-                    pin: "",
-                    color: "#a8a29e",
-                    role: "babysitter",
-                    isAdmin: false,
-                  };
-                  handleQuickPick(guest);
-                }}
-                className="w-full text-center text-xs text-stone-400 hover:text-stone-600 py-2 rounded-lg hover:bg-stone-50 transition-colors"
+                onClick={() => { setShowQuickPick(false); router.push("/join"); }}
+                className="text-xs text-amber-500 hover:text-amber-400 font-medium py-1.5 px-4 rounded-lg hover:bg-amber-50 transition-colors"
               >
-                Not on the list? Post as Guest
+                Join this family board →
               </button>
             </div>
           </div>
