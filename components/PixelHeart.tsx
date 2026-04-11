@@ -24,17 +24,18 @@ export function PixelHeart({ color, size = 14 }: PixelIconProps) {
 }
 
 export function PixelThumbsUp({ color, size = 14 }: PixelIconProps) {
-  // Thumb: 2 wide x 3 tall (right side), Fist: 3 wide x 4 tall (full width)
+  // Thumb: 2 wide x 3 tall (top right), Fist: 4 wide x 5 tall (bottom)
   const grid = [
-    [0,1,1],  // thumb row 1
-    [0,1,1],  // thumb row 2
-    [0,1,1],  // thumb row 3
-    [1,1,1],  // fist row 1
-    [1,1,1],  // fist row 2
-    [1,1,1],  // fist row 3
-    [1,1,1],  // fist row 4
+    [0,0,1,1],  // thumb row 1
+    [0,0,1,1],  // thumb row 2
+    [0,0,1,1],  // thumb row 3
+    [1,1,1,1],  // fist row 1
+    [1,1,1,1],  // fist row 2
+    [1,1,1,1],  // fist row 3
+    [1,1,1,1],  // fist row 4
+    [1,1,1,1],  // fist row 5
   ];
-  const cols = 3, rows = 7;
+  const cols = 4, rows = 8;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${cols} ${rows}`} style={{ imageRendering: "pixelated", display: "block" }}>
       {grid.flatMap((row, y) => row.map((on, x) => on ? <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={color} /> : null))}
@@ -57,13 +58,14 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
     [0,0,0,1,0,0,0],
   ];
   const thumbGrid = [
-    [0,1,1],
-    [0,1,1],
-    [0,1,1],
-    [1,1,1],
-    [1,1,1],
-    [1,1,1],
-    [1,1,1],
+    [0,0,1,1],
+    [0,0,1,1],
+    [0,0,1,1],
+    [1,1,1,1],
+    [1,1,1,1],
+    [1,1,1,1],
+    [1,1,1,1],
+    [1,1,1,1],
   ];
 
   const grid = type === "heart" ? heartGrid : thumbGrid;
