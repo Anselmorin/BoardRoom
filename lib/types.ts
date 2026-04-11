@@ -63,6 +63,7 @@ export function ensureRole(member: FamilyMember): FamilyMember {
 export interface Family {
   name: string;
   members: FamilyMember[];
+  joinCode?: string;
 }
 
 export interface Comment {

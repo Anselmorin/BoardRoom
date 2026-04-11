@@ -34,7 +34,18 @@ export function getFamily(): Family | null {
   return family;
 }
 
+function generateJoinCode(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const p1 = Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const p2 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return `${p1}-${p2}`;
+}
+
 export function setFamily(family: Family): void {
+  // Auto-generate join code if not present
+  if (!family.joinCode) {
+    family = { ...family, joinCode: generateJoinCode() };
+  }
   localStorage.setItem(FAMILY_KEY, JSON.stringify(family));
 }
 
