@@ -12,9 +12,7 @@ export default function JoinPage() {
   const router = useRouter();
   const family = getFamily();
 
-  const [step, setStep] = useState(0);
-  const [joinCode, setJoinCode] = useState("");
-  const [codeError, setCodeError] = useState("");
+  const [step, setStep] = useState(1); // skip code step on iPad - family already here
   const [name, setName] = useState("");
   const [role, setRole] = useState<Role>("brother");
   const [color, setColor] = useState(MEMBER_COLORS[0].value);
