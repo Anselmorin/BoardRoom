@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { FamilyMember, MedLog, ActivityLog } from "@/lib/types";
+import { FamilyMember, MedLog, ActivityLog, ROLE_INFO } from "@/lib/types";
+
+const isChildRole = (role: string) => role === "baby" || role === "toddler";
 import UserAvatar from "./UserAvatar";
 
 interface TrackerPanelProps {
@@ -131,9 +133,9 @@ export default function TrackerPanel({ members, currentUser, onUpdateMember, onC
               </button>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs — activity only for baby/toddler */}
             <div className="flex gap-2">
-              {["health", "activity"].map(t => (
+              {(["health", ...(isChildRole(selected.role) ? ["activity"] : [])] as string[]).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t as any)}
@@ -236,8 +238,8 @@ export default function TrackerPanel({ members, currentUser, onUpdateMember, onC
             {/* Activity tab */}
             {tab === "activity" && (
               <div className="space-y-3">
-                {/* Quick log buttons */}
-                {(selected.isYoungChild || selected.role === "sister" || selected.role === "brother") && (
+                {/* Quick log buttons — only for baby/toddler */}
+                {isChildRole(selected.role) && (
                   <div className="grid grid-cols-4 gap-2">
                     {[
                       { type: "fed" as const, emoji: "🍼", label: "Fed" },

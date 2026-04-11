@@ -348,7 +348,7 @@ export default function HomePage() {
           )}
 
           {/* Tracker button */}
-          <button onClick={() => setShowTracker(true)} className="text-lg" title="Tracker">👶</button>
+          <button onClick={() => setShowTracker(true)} className="text-lg" title="Family Tracker">🩺</button>
 
           {/* Theme button */}
           <button onClick={() => setShowTheme(true)} className="text-lg" title="Themes">🎨</button>

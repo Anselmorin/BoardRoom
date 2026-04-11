@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Family, FamilyMember, Role, ROLE_INFO, ALL_ROLES } from "@/lib/types";
+import { Family, FamilyMember, Role, ROLE_INFO, ALL_ROLES, ADMIN_ROLES } from "@/lib/types";
+
+// Roles manageable from iPad: admins + children (no device). Others join via Remote app.
+const IPAD_MANAGEABLE_ROLES: Role[] = [...ADMIN_ROLES, "baby", "toddler"];
 import { MEMBER_COLORS } from "@/lib/colors";
 import UserAvatar from "./UserAvatar";
 
@@ -134,7 +137,12 @@ export default function ManageFamily({
             })}
           </div>
 
-          {/* Add member form */}
+          {/* Remote app note */}
+          <div className="text-xs text-stone-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 rounded-lg px-3 py-2">
+            📱 <strong>Brothers, sisters, au pairs, nannies</strong> should join via the <strong>BoardRoom Remote</strong> app using the family join code.
+          </div>
+
+          {/* Add member form (admin + children only) */}
           {showForm ? (
             <div className="space-y-3 p-3 rounded-lg bg-white/50 border border-stone-300/50">
               <input
@@ -152,7 +160,7 @@ export default function ManageFamily({
                   Role:
                 </label>
                 <div className="grid grid-cols-4 gap-2">
-                  {ALL_ROLES.map((r) => {
+                  {IPAD_MANAGEABLE_ROLES.map((r) => {
                     const info = ROLE_INFO[r];
                     return (
                       <button

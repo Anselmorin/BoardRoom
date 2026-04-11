@@ -1,6 +1,6 @@
-export type Role = "dad" | "mom" | "brother" | "sister" | "chef" | "nanny" | "au-pair" | "babysitter";
+export type Role = "dad" | "mom" | "brother" | "sister" | "chef" | "nanny" | "au-pair" | "babysitter" | "baby" | "toddler";
 
-export const ROLE_INFO: Record<Role, { label: string; emoji: string; tier: "admin" | "member" | "limited" }> = {
+export const ROLE_INFO: Record<Role, { label: string; emoji: string; tier: "admin" | "member" | "limited" | "child" }> = {
   dad: { label: "Dad", emoji: "👨", tier: "admin" },
   mom: { label: "Mom", emoji: "👩", tier: "admin" },
   brother: { label: "Brother", emoji: "👦", tier: "member" },
@@ -9,6 +9,8 @@ export const ROLE_INFO: Record<Role, { label: string; emoji: string; tier: "admi
   nanny: { label: "Nanny", emoji: "👶", tier: "member" },
   "au-pair": { label: "Au Pair", emoji: "🏠", tier: "member" },
   babysitter: { label: "Babysitter", emoji: "🍼", tier: "limited" },
+  baby: { label: "Baby", emoji: "👶", tier: "child" },
+  toddler: { label: "Toddler", emoji: "🧒", tier: "child" },
 };
 
 export const ALL_ROLES = Object.keys(ROLE_INFO) as Role[];
