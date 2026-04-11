@@ -76,8 +76,8 @@ export function PixelReactionAnimated({ type, color, size = 40 }: { type: "heart
   const allPixels: { x: number; y: number }[] = [];
   grid.forEach((row, y) => row.forEach((on, x) => { if (on) allPixels.push({ x, y }); }));
 
-  // Shuffle for random build-up order
-  const shuffled = [...allPixels].sort(() => Math.random() - 0.5);
+  // Sort bottom to top, then left to right within each row
+  const shuffled = [...allPixels].sort((a, b) => b.y - a.y || a.x - b.x);
 
   const [visibleCount, setVisibleCount] = useState(0);
   const visibleSet = new Set(shuffled.slice(0, visibleCount).map(p => `${p.x}-${p.y}`));
