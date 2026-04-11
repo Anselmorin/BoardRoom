@@ -48,6 +48,7 @@ export interface FamilyMember {
   activityLogs?: ActivityLog[];
   // Young child tracking (Lumi etc)
   isYoungChild?: boolean; // enables feeding/activity log
+  trackerAccessIds?: string[]; // member IDs allowed to log for this child (empty = all admins)
 }
 
 /** Backward compat: assign a role to legacy members that don't have one */

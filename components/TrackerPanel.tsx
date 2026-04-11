@@ -13,6 +13,13 @@ interface TrackerPanelProps {
   onClose: () => void;
 }
 
+function canAccessTracker(child: FamilyMember, user: FamilyMember | null, members: FamilyMember[]): boolean {
+  if (!user) return false;
+  if (user.isAdmin) return true; // admins always have access
+  if (!child.trackerAccessIds || child.trackerAccessIds.length === 0) return user.isAdmin; // default: admins only
+  return child.trackerAccessIds.includes(user.id);
+}
+
 function formatTimeAgo(isoDate: string): string {
   const diff = Date.now() - new Date(isoDate).getTime();
   const mins = Math.floor(diff / 60000);
@@ -41,6 +48,8 @@ export default function TrackerPanel({ members, currentUser, onUpdateMember, onC
   const [tab, setTab] = useState<"health" | "activity">("health");
 
   const selected = members.find(m => m.id === selectedMemberId);
+  const hasAccess = selected ? canAccessTracker(selected, currentUser, members) : false;
+  const isAdmin = currentUser?.isAdmin ?? false;
 
   const toggleSickMode = () => {
     if (!selected) return;
@@ -148,8 +157,50 @@ export default function TrackerPanel({ members, currentUser, onUpdateMember, onC
               ))}
             </div>
 
+            {/* No access state */}
+            {!hasAccess && isChildRole(selected.role) && (
+              <div className="text-center py-8 px-4">
+                <div className="text-4xl mb-3">🔒</div>
+                <p className="text-stone-500 font-medium">No access</p>
+                <p className="text-xs text-stone-400 mt-1">You don&apos;t have permission to log for {selected.name}. Ask an admin to grant you access.</p>
+              </div>
+            )}
+
+            {/* Access settings (admin only, for child roles) */}
+            {isAdmin && isChildRole(selected.role) && (
+              <div className="p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800">
+                <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-2">Who can log for {selected.name}?</p>
+                <div className="flex flex-wrap gap-2">
+                  {members.filter(m => m.id !== selected.id).map(m => {
+                    const hasIt = !selected.trackerAccessIds?.length || selected.trackerAccessIds.includes(m.id);
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => {
+                          const current = selected.trackerAccessIds || [];
+                          const updated = current.includes(m.id)
+                            ? current.filter(id => id !== m.id)
+                            : [...current, m.id];
+                          onUpdateMember({ ...selected, trackerAccessIds: updated });
+                        }}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                          hasIt
+                            ? "bg-violet-100 dark:bg-violet-900/40 border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300"
+                            : "bg-stone-100 dark:bg-stone-700 border-stone-200 dark:border-stone-600 text-stone-400"
+                        }`}
+                      >
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: m.color }} />
+                        {m.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-stone-400 mt-2">Admins always have access. Deselect to restrict.</p>
+              </div>
+            )}
+
             {/* Health tab */}
-            {tab === "health" && (
+            {hasAccess && tab === "health" && (
               <div className="space-y-3">
                 {/* Last medication */}
                 {lastMed && (
@@ -236,7 +287,7 @@ export default function TrackerPanel({ members, currentUser, onUpdateMember, onC
             )}
 
             {/* Activity tab */}
-            {tab === "activity" && (
+            {hasAccess && tab === "activity" && (
               <div className="space-y-3">
                 {/* Quick log buttons — only for baby/toddler */}
                 {isChildRole(selected.role) && (
