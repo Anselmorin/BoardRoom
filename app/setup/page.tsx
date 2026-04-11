@@ -61,14 +61,19 @@ export default function SetupPage() {
             <h1 className="text-3xl font-bold text-amber-400 mb-2">
               Welcome to BoardRoom!
             </h1>
-            <p className="text-stone-400 mb-8">
-              Let&apos;s set up your family board.
+            <p className="text-stone-400 mb-4">
+              Your family&apos;s shared digital board — notes, reminders, and more.
             </p>
+            <div className="text-left bg-amber-50 border border-amber-200/60 rounded-xl p-4 mb-6 text-sm text-stone-600 space-y-2">
+              <p>📌 <strong>This app is for your household</strong> — people who live here or are here regularly.</p>
+              <p>📱 <strong>Parents & little ones</strong> are set up here on the iPad.</p>
+              <p>👨‍👩‍👧 <strong>Everyone else</strong> (siblings, au pairs, nannies) joins from their own phone using <strong>BoardRoom Remote</strong>.</p>
+            </div>
             <button
               onClick={() => setStep(1)}
               className="px-8 py-3 bg-amber-500 text-stone-900 rounded-xl font-medium text-lg hover:bg-amber-400 transition-colors"
             >
-              Get Started
+              Set Up Board
             </button>
           </div>
         )}
@@ -147,8 +152,11 @@ export default function SetupPage() {
             <h2 className="text-2xl font-bold text-stone-800 mb-2">
               What&apos;s your role?
             </h2>
-            <p className="text-stone-400 mb-6">
+            <p className="text-stone-400 mb-4">
               As the first member, you&apos;ll be an admin.
+            </p>
+            <p className="text-xs text-stone-400 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 mb-4">
+              💡 Only add <strong>parents</strong> here. Other family members join from their own phone using the BoardRoom Remote app.
             </p>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {ADMIN_ROLES.map((r) => {
