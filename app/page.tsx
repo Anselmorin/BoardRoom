@@ -419,6 +419,25 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
+            {/* Guest bypass */}
+            <div className="mt-4 pt-4 border-t border-stone-100">
+              <button
+                onClick={() => {
+                  const guest: FamilyMember = {
+                    id: "guest-" + Date.now(),
+                    name: "Guest",
+                    pin: "",
+                    color: "#a8a29e",
+                    role: "babysitter",
+                    isAdmin: false,
+                  };
+                  handleQuickPick(guest);
+                }}
+                className="w-full text-center text-xs text-stone-400 hover:text-stone-600 py-2 rounded-lg hover:bg-stone-50 transition-colors"
+              >
+                Not on the list? Post as Guest
+              </button>
+            </div>
           </div>
         </div>
       )}
